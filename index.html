@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kickerliga</title>
+<meta name="theme-color" content="#0e7a45">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kickerliga">
+<link rel="apple-touch-icon" href="icon.png"><link rel="icon" type="image/png" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: Aushang im Vereinsheim – sportlich, knapp, mit Augenzwinkern
+   IDEA: die Anzeigetafel neben dem Kickertisch
+   PICTURE: Spielfeldband mit Kreidelinien und Toren, darunter die Tabelle als Hauptsache
+   COLOUR and TYPE: Kickergrün, Kreideweiß, Blau gegen Rot, Messing für Titel; Barlow Condensed + Barlow
+   LAYOUT: Band, Reiter, eine Spalte bis 960px, Teams nebeneinander ab 640px */
+:root{color-scheme:light dark;--bg:light-dark(#eef2ee,#09110d);--card:light-dark(#fff,#101b15);--ink:light-dark(#12201a,#e5eee7);--mut:light-dark(#5a6b61,#8ea294);--line:light-dark(#dbe4dd,#21332a);--felt:light-dark(#0e7a45,#0c5c35);--felt2:light-dark(#0a6038,#08442a);--chalk:#f3faf5;--red:light-dark(#cf2a3c,#ff6473);--blue:light-dark(#1c58cc,#7ea6ff);--gold:light-dark(#946a00,#f0c84d);--win:light-dark(#0e7a45,#47c986);--loss:light-dark(#c9d0cb,#36463d);--soft:light-dark(#f4f7f4,#0d1712);--acc:light-dark(#0e7a45,#47c986);--s1:light-dark(#2a78d6,#3987e5);--s2:light-dark(#eb6834,#d95926);--s3:light-dark(#1baf7a,#199e70)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.num{font-family:"Barlow Condensed",Barlow,sans-serif;line-height:1.05;font-variant-numeric:tabular-nums}
+a{color:var(--acc)}
+.pitch{position:relative;overflow:hidden;color:var(--chalk);background:repeating-linear-gradient(90deg,transparent 0 9%,rgba(255,255,255,.05) 9% 18%),linear-gradient(180deg,var(--felt),var(--felt2));padding:clamp(28px,5vw,52px) max(5vw,40px) clamp(26px,4vw,40px)}
+.ln{position:absolute;inset:12px;border:2px solid rgba(255,255,255,.32);border-radius:4px;pointer-events:none}
+.ln::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.32)}
+.ln::after{content:"";position:absolute;left:50%;top:50%;width:min(160px,32vw);aspect-ratio:1;border:2px solid rgba(255,255,255,.32);border-radius:50%;transform:translate(-50%,-50%)}
+.goal{position:absolute;top:50%;width:9px;height:clamp(56px,40%,84px);transform:translateY(-50%);border-radius:2px;box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+.goal.l{left:12px;background:#2f6fe4}.goal.r{right:12px;background:#e23a4c}
+.ball{position:absolute;left:calc(50% + 46px);top:62%;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 34% 32%,#fff 0 30%,#dfe6e1 60%,#aeb8b1);box-shadow:3px 5px 6px rgba(0,0,0,.28);animation:roll 7s ease-in-out infinite alternate}
+@keyframes roll{to{transform:translateX(min(28vw,260px)) rotate(540deg)}}
+@media(prefers-reduced-motion:reduce){.ball{animation:none}}
+.hd{position:relative;max-width:960px;margin:0 auto}
+.hd h1{margin:0;font-size:clamp(44px,8vw,64px);font-weight:800;text-wrap:balance;text-shadow:0 2px 0 rgba(0,0,0,.12)}
+.hs{margin:6px 0 0;font-size:17px}.hs b{font-weight:700}.hs span{opacity:.85}
+.hc{display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;padding:6px 12px 6px 10px;border-radius:99px;background:rgba(0,0,0,.2);font-size:15px}
+.hc .crown{color:#f6d566;width:20px}.hc span{opacity:.8}
+.crown{width:16px;height:auto;flex:none;vertical-align:-2px}
+.tabs{position:sticky;top:0;z-index:5;display:flex;gap:2px;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--line);padding:0 max(calc((100% - 960px)/2 + 6px),6px);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{flex:none;display:flex;align-items:center;min-height:50px;padding:0 13px;color:var(--mut);text-decoration:none;font-weight:600;border-bottom:3px solid transparent}
+.tabs a[aria-current=page]{color:var(--ink);border-color:var(--acc)}.tabs a.add{color:var(--acc)}
+.tabs a:focus-visible,.btn:focus-visible,.row:focus-visible,.chip:focus-visible,.lnk:focus-visible,.seg button:focus-visible,.step button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{max-width:960px;margin:0 auto;padding:22px 16px 72px}
+.vh{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 0 14px}
+.vh h2{margin:0;font-size:clamp(32px,5vw,40px);font-weight:700}.meta{margin:4px 0 0;color:var(--mut);font-size:15px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 0 rgba(0,0,0,.03)}.pad{padding:18px}
+.list{overflow:hidden}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 18px;border:0;border-radius:10px;background:var(--felt);color:#fff;font:600 16px Barlow,sans-serif;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:.45;cursor:not-allowed}.btn.big{min-height:54px;font-size:18px;padding:0 26px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.danger{background:var(--red)}.btn.sm{min-height:44px;padding:0 14px;font-size:15px}
+a.btn{color:#fff}
+.lnk{min-height:44px;padding:0 8px;border:0;background:none;color:var(--mut);font:500 15px Barlow,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px}.lnk.danger{color:var(--red)}
+.row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.row:last-child{border-bottom:0}.row:hover{background:var(--soft)}
+.rk{font-size:24px;font-weight:700;color:var(--mut);text-align:center}.lead .rk{color:var(--gold)}
+.who{display:flex;flex-direction:column;gap:2px}
+.nm{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sub{color:var(--mut);font-size:14px;line-height:1.35}.sub i{font-style:normal;color:var(--gold)}
+.badge{display:inline-block;margin-right:5px;padding:2px 5px 1px;border:1.5px solid var(--gold);border-radius:4px;color:var(--gold);font:700 13px/1.1 "Barlow Condensed",sans-serif}
+.tk{display:inline-flex;align-items:center;gap:4px;padding:0 8px 0 6px;border:1.5px solid var(--gold);border-radius:99px;color:var(--gold);font:700 13px/1.5 Barlow,sans-serif}.tk .crown{width:14px}
+.wm{display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:99px;background:light-dark(#fbf1d0,#3a3010);color:var(--gold);font:700 13px/1.6 Barlow,sans-serif}
+.form{display:flex;gap:4px;margin-top:3px;align-items:center;flex-wrap:wrap}.dot{width:9px;height:9px;border-radius:50%;background:var(--loss)}.dot.w{background:var(--win)}
+.fire{display:inline-flex;align-items:center;gap:1px;font:800 16px/1 "Barlow Condensed",sans-serif;color:light-dark(#d9480f,#ff8a3d)}
+.fire svg{width:18px;height:18px}.fire .o{fill:#ff6b1a}.fire .i{fill:#ffd23f}
+.fire.t2{color:light-dark(#1d5fe0,#7fb0ff)}.fire.t2 .o{fill:#2f7bff}.fire.t2 .i{fill:#cfe8ff}
+.fire.t3{color:light-dark(#7a2ee6,#c9a2ff)}.fire.t3 .o{fill:#8b3dff}.fire.t3 .i{fill:#f6e3ff}
+.achs{display:inline-flex;gap:9px;margin-left:8px;flex-wrap:wrap}
+.ach{display:inline-flex;align-items:center;gap:2px;font:700 14px/1 "Barlow Condensed",sans-serif;color:var(--mut);white-space:nowrap}
+.ach svg{width:16px;height:16px;flex:none}
+.ic-sh svg{color:light-dark(#0f766e,#2dd4bf)}.ic-md svg{color:var(--gold)}.ic-bt svg{color:light-dark(#7c3aed,#c4b5fd)}
+.rb1{fill:var(--blue)}.rb2{fill:var(--red)}
+.elo{font-size:30px;font-weight:700;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+.elo small{font:600 13px Barlow,sans-serif;color:var(--mut)}.elo small.up{color:var(--win)}.elo small.dn{color:var(--red)}
+.idle{opacity:.75}.grp{margin:0;padding:14px 16px 6px;font:600 14px Barlow,sans-serif;color:var(--mut);border-bottom:1px solid var(--line);background:var(--soft)}
+.empty{padding:22px 18px;margin:0;color:var(--mut)}.empty b{color:var(--ink)}
+.status{margin:0 0 14px;padding:12px 16px;border-radius:12px;background:light-dark(#fff6da,#2b250f);color:var(--ink);border:1px solid light-dark(#efd98a,#5a4c1c)}.status.err{background:light-dark(#fde8ea,#33151a);border-color:light-dark(#f3b3bb,#6a2a33)}
+.seg{display:inline-grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:var(--soft);border:1px solid var(--line);margin-bottom:16px}
+.seg button{min-height:44px;padding:0 18px;border:0;border-radius:9px;background:none;color:var(--mut);font:600 16px Barlow,sans-serif;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.teams{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center}
+.team{margin:0;padding:14px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px;background:var(--soft)}
+.team legend{padding:0 6px;font:700 20px "Barlow Condensed",sans-serif}
+.team.blue{border-top:6px solid var(--blue)}.team.blue legend{color:var(--blue)}.team.red{border-top:6px solid var(--red)}.team.red legend{color:var(--red)}
+.vs{font-size:22px;font-weight:800;color:var(--mut)}
+select,input{width:100%;min-height:48px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:500 16px Barlow,sans-serif}
+select:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:1px}
+.p2{display:none}.two .p2{display:block}
+.gl{font-size:14px;color:var(--mut);margin-top:4px}
+.step{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:6px}
+.step button{min-height:48px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:600 24px Barlow,sans-serif;cursor:pointer}
+.step input{text-align:center;font:700 30px "Barlow Condensed",sans-serif;padding:0}
+.pred{margin:16px 0 4px;padding:14px;border-radius:12px;border:1px dashed var(--line)}
+.pbar{height:12px;border-radius:99px;background:var(--red);overflow:hidden}.pb{display:block;height:100%;background:var(--blue)}
+.prow{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:15px}.prow b{font-size:20px}
+.bt{color:var(--blue)}.rt{color:var(--red)}
+.hint{margin:8px 0 0;color:var(--mut);font-size:15px}.hint b{color:var(--ink)}
+.foot{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:14px}
+.when{display:grid;gap:4px;font-size:14px;color:var(--mut);flex:1 1 220px}.foot .btn{flex:1 1 220px}
+.fmsg{margin:10px 0 0;color:var(--red);font-weight:600;min-height:1px}
+.mlist,.plist{list-style:none;margin:0;padding:0}
+.match{padding:12px 16px;border-bottom:1px solid var(--line)}.match:last-child{border-bottom:0}
+.mt{font-size:13px;color:var(--mut)}
+.ml{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;margin-top:4px}
+.side{display:flex;flex-direction:column;font-weight:500}.side em{font-style:normal;font-size:13px;color:var(--mut)}
+.side.won{font-weight:700}.side.won em{color:var(--win)}
+.side.blue{border-left:4px solid var(--blue);padding-left:8px}.side.red{border-right:4px solid var(--red);padding-right:8px;text-align:right;align-items:flex-end}
+.score{font-size:28px;font-weight:700;white-space:nowrap}
+.cf{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:14px;color:var(--mut)}
+.inl{display:flex;gap:10px;flex-wrap:wrap}.inl input{flex:1 1 200px}
+#addP{margin-bottom:14px}
+.pl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 10px 6px 16px;border-bottom:1px solid var(--line);min-height:56px}.pl:last-child{border-bottom:0}
+.pn{font-weight:700;flex:1 1 auto}.pg{color:var(--mut);font-size:14px;white-space:nowrap}.pl .inl{flex:1 1 100%;padding:6px 0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.chip{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:56px;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;text-align:left}
+.chip small{display:flex;gap:5px;align-items:center;color:var(--mut);font-size:13px}.chip.on{border-color:var(--felt);box-shadow:inset 0 0 0 1px var(--felt)}
+.champ{display:flex;gap:16px;align-items:center;padding:18px;margin-bottom:14px;background:linear-gradient(135deg,var(--felt),var(--felt2));color:var(--chalk);border:0}
+.champ>.crown{width:54px;color:#f6d566}.champ .lbl{display:block;font-size:14px;opacity:.85;color:inherit}.champ .cn{display:block;font:800 clamp(30px,5vw,40px)/1.05 "Barlow Condensed",sans-serif}.champ .sub{color:inherit;opacity:.85}
+details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-items:center;padding:0 16px;cursor:pointer;font-weight:600}
+.prose{max-width:70ch}.prose h3{font-size:24px;margin:22px 0 6px}.prose h3:first-child{margin-top:0}.prose p,.prose li{color:var(--ink)}.prose ul{padding-left:20px}
+.titles{list-style:none;padding:0!important;display:grid;gap:2px}.titles li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}.titles li.two{grid-template-columns:44px minmax(0,1fr)}.titles small{color:var(--mut);font-size:14px;white-space:nowrap}.titles .crown{color:var(--gold);width:22px}.titles li .num{color:var(--mut);font-size:17px;white-space:nowrap}
+.ov{position:fixed;inset:0;z-index:20;background:rgba(5,12,8,.5);display:flex;align-items:center;justify-content:center;padding:16px}.ov[hidden]{display:none}
+.sheet{width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--card);border-radius:18px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.sh-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.sh-h h3{margin:2px 0 4px;font-size:34px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.lbl{font-size:13px;color:var(--mut)}
+.x{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--soft);color:var(--ink);font-size:24px;cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}.kpis div{padding:10px;border-radius:10px;background:var(--soft);display:flex;flex-direction:column}.kpis b{font-size:26px}.kpis span{font-size:12px;color:var(--mut);line-height:1.25}
+.curve{position:relative;height:120px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.curve svg{width:100%;height:100%;overflow:visible}
+.curve polyline{fill:none;stroke:var(--acc);stroke-width:2.5;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.curve line{stroke:var(--line);stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke}.cl{display:flex;flex-direction:column;justify-content:space-between;font-size:13px;color:var(--mut)}
+.facts{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px}
+.toast{position:fixed;left:50%;bottom:20px;z-index:30;transform:translate(-50%,140%);max-width:calc(100% - 32px);padding:12px 18px;border-radius:12px;background:var(--ink);color:var(--card);font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);visibility:hidden;transition:transform .25s,visibility .25s}.toast.on{transform:translate(-50%,0);visibility:visible}.toast.err{background:var(--red);color:#fff}
+.ro .wonly{display:none}
+.cards{display:grid;gap:14px}.ch{margin:0 0 4px;font-size:26px}.ch+.meta{margin:0 0 12px}
+.fig{position:relative;height:300px}.fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}
+.gl2{stroke:var(--line);stroke-width:1}.gl2.base{stroke:var(--mut);stroke-dasharray:4 4;opacity:.55}
+.ax{fill:var(--mut);font:500 12px Barlow,sans-serif}.ln0{fill:none;stroke:var(--loss);stroke-width:1.25;stroke-linejoin:round}
+.halo{fill:none;stroke:var(--card);stroke-width:6;stroke-linejoin:round;stroke-linecap:round}.ln1{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.el{font:700 13px Barlow,sans-serif;fill:var(--ink)}.xh{stroke:var(--mut);stroke-width:1}
+.ctip{position:absolute;top:6px;min-width:160px;max-width:220px;padding:8px 10px;border-radius:10px;background:var(--card);border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.15);font-size:13px;line-height:1.45;pointer-events:none}
+.ctip .tt{color:var(--mut);margin-bottom:2px}.ctip b{font-variant-numeric:tabular-nums;margin-right:4px}.ctip .k{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.lg{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:99px;background:var(--card);color:var(--mut);font:600 14px Barlow,sans-serif;cursor:pointer}
+.lg i{width:14px;height:3px;border-radius:2px;background:var(--loss)}.lg.on{color:var(--ink);border-color:var(--ink)}.lg.on i{background:var(--c)}
+.lg:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.duo{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.duo:last-child{border-bottom:0}
+.duo .rk{font-size:20px}.duo .dv{text-align:right;font:700 20px "Barlow Condensed",sans-serif}.duo .dv small{display:block;font:500 13px Barlow,sans-serif;color:var(--mut)}
+.duos .grp{background:none;padding:12px 0 4px;border-bottom:1px solid var(--line)}
+.awards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.aw{padding:14px;display:grid;gap:2px;align-content:start}.aw svg{width:26px;height:26px;margin-bottom:4px}.aw .at{font:700 18px "Barlow Condensed",sans-serif}.aw .an{font-weight:700;overflow-wrap:anywhere}.aw .av{color:var(--mut);font-size:14px}
+.aw .ic{color:var(--acc)}
+.toast{display:flex;align-items:center;gap:12px}.tb{flex:none;min-height:40px;padding:0 12px;border:1.5px solid currentColor;border-radius:9px;background:none;color:inherit;font:700 15px Barlow,sans-serif;cursor:pointer}
+.hsel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:14px}.hsel label{display:grid;gap:4px;font-size:14px;font-weight:600}
+.hsel .bt select{border-left:5px solid var(--blue)}.hsel .rt select{border-left:5px solid var(--red)}
+.duel{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center;margin:18px 0 10px}
+.dn{font:700 clamp(22px,4vw,30px)/1.1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}.dn.rt{text-align:right}
+.dsc{font-size:clamp(52px,10vw,76px);font-weight:800;white-space:nowrap}.dsc span{color:var(--mut);padding:0 4px}
+.pbar.none{background:var(--loss)}.pbar.none .pb{display:none}
+.center{text-align:center}.kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.subh{margin:20px 0 8px;font-size:22px}
+.achlist{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}.achlist li{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:center}.achlist li.off{opacity:.4}
+.achlist svg{width:22px;height:22px}.achlist .num{font-size:20px;font-weight:700}
+.career{margin-top:14px;padding:12px;border-radius:10px;background:var(--soft);font-size:15px}
+.sheet .btn{width:100%;margin-top:16px}
+@media(max-width:640px){.awards{grid-template-columns:repeat(2,minmax(0,1fr))}.fig{height:260px}.tabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);padding-right:30px}.teams{grid-template-columns:minmax(0,1fr)}.vs{text-align:center;font-size:18px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr))}.achs{margin-left:4px}.vh .btn{width:100%}.row{padding:12px}.elo{font-size:26px}.ball{display:none}}
+</style>
+</head>
+<body>
+<header class="pitch">
+  <div class="ln" aria-hidden="true"></div><i class="goal l" aria-hidden="true"></i><i class="goal r" aria-hidden="true"></i><i class="ball" aria-hidden="true"></i>
+  <div class="hd">
+    <h1>Kickerliga</h1>
+    <p class="hs"><b id="hSeason">Saison</b> <span id="hMeta"></span></p>
+    <p class="hc" id="hChamp"></p>
+  </div>
+</header>
+<nav class="tabs" aria-label="Bereiche">
+  <a href="#tabelle">Tabelle</a><a href="#eintragen" class="add wonly">+ Eintragen</a><a href="#spiele">Spiele</a><a href="#statistik">Statistik</a><a href="#spieler">Spieler</a><a href="#archiv">Archiv</a><a href="#regeln">Regeln</a>
+</nav>
+<main class="wrap">
+  <div id="status" class="status" hidden></div>
+  <div id="ro" class="status" hidden>Du kannst die Liga ansehen, aber nichts eintragen. Bitte den Liga-Admin, dich als Bearbeiter einzuladen.</div>
+
+  <section data-view="tabelle">
+    <div class="vh"><div><h2>Tabelle</h2><p class="meta" id="tMeta"></p></div><a class="btn wonly" href="#eintragen">+ Spiel eintragen</a></div>
+    <div class="card list" id="table"><p class="empty">Lade die Liga …</p></div>
+  </section>
+
+  <section data-view="eintragen" hidden>
+    <div class="vh"><div><h2>Spiel eintragen</h2><p class="meta">Wer hat gespielt, wie ist es ausgegangen?</p></div></div>
+    <form id="gameF" class="card pad" novalidate>
+      <div class="seg" role="group" aria-label="Spielmodus"><button type="button" data-act="mode" data-m="1v1" aria-pressed="true">1 gegen 1</button><button type="button" data-act="mode" data-m="2v2" aria-pressed="false">2 gegen 2</button></div>
+      <div class="teams">
+        <fieldset class="team blue"><legend>Team Blau</legend>
+          <select id="a1" aria-label="Blau, Spieler 1"></select><select id="a2" class="p2" aria-label="Blau, Spieler 2"></select>
+          <label class="gl" for="ga">Tore Blau</label>
+          <div class="step"><button type="button" data-act="step" data-t="ga" data-d="-1" aria-label="Ein Tor weniger für Blau">−</button><input id="ga" type="number" inputmode="numeric" min="0" max="99" value="0"><button type="button" data-act="step" data-t="ga" data-d="1" aria-label="Ein Tor mehr für Blau">+</button></div>
+        </fieldset>
+        <span class="vs num" aria-hidden="true">gegen</span>
+        <fieldset class="team red"><legend>Team Rot</legend>
+          <select id="b1" aria-label="Rot, Spieler 1"></select><select id="b2" class="p2" aria-label="Rot, Spieler 2"></select>
+          <label class="gl" for="gb">Tore Rot</label>
+          <div class="step"><button type="button" data-act="step" data-t="gb" data-d="-1" aria-label="Ein Tor weniger für Rot">−</button><input id="gb" type="number" inputmode="numeric" min="0" max="99" value="0"><button type="button" data-act="step" data-t="gb" data-d="1" aria-label="Ein Tor mehr für Rot">+</button></div>
+        </fieldset>
+      </div>
+      <div id="pred" class="pred"></div>
+      <div class="foot"><label class="when">Gespielt am<input id="when" type="datetime-local"></label><button id="save" class="btn big">Spiel speichern</button></div>
+      <p id="formMsg" class="fmsg" role="alert"></p>
+    </form>
+  </section>
+
+  <section data-view="spiele" hidden>
+    <div class="vh"><div><h2>Spiele</h2><p class="meta" id="mMeta"></p></div></div>
+    <ul class="card mlist" id="mList"></ul>
+  </section>
+
+  <section data-view="statistik" hidden>
+    <div class="vh"><div><h2>Statistik</h2><p class="meta">Duelle, Elo-Verlauf und die besten Duos</p></div></div>
+    <div class="cards">
+      <div class="card pad" id="vgl">
+        <h3 class="ch">Direkter Vergleich</h3><p class="meta">Wer hat im Duell die Nase vorn?</p>
+        <div class="hsel"><label class="bt">Spieler 1<select id="ha"></select></label><label class="rt">Spieler 2<select id="hb"></select></label></div>
+        <div class="seg" role="group" aria-label="Zeitraum Vergleich"><button type="button" data-act="scope" data-s="cur" aria-pressed="true">Diese Saison</button><button type="button" data-act="scope" data-s="all" aria-pressed="false">Alle Saisons</button></div>
+        <div id="h2h"></div>
+      </div>
+      <div class="card pad">
+        <h3 class="ch">Elo-Verlauf</h3><p class="meta" id="cMeta"></p>
+        <div class="fig" id="cfig"><svg id="chart" role="img" aria-label="Elo-Verlauf aller Spieler dieser Saison"></svg><div id="ctip" class="ctip" hidden></div></div>
+        <div class="legend" id="cleg"></div>
+      </div>
+      <div class="card pad">
+        <h3 class="ch">Beste Duos</h3><p class="meta">Welche Zweierteams im 2 gegen 2 am besten funktionieren, gewertet ab 3 gemeinsamen Spielen</p>
+        <div class="seg" role="group" aria-label="Zeitraum Duos"><button type="button" data-act="dscope" data-s="cur" aria-pressed="true">Diese Saison</button><button type="button" data-act="dscope" data-s="all" aria-pressed="false">Alle Saisons</button></div>
+        <div id="duos" class="duos"></div>
+      </div>
+    </div>
+  </section>
+
+  <section data-view="spieler" hidden>
+    <div class="vh"><div><h2>Spieler</h2><p class="meta" id="pCount"></p></div></div>
+    <form id="addP" class="card pad inl wonly" novalidate><input id="newName" maxlength="24" placeholder="Name, z. B. Lena" aria-label="Name des neuen Spielers" autocomplete="off"><button class="btn">Hinzufügen</button></form>
+    <ul class="card plist" id="pList"></ul>
+    <p class="hint"><button class="lnk" data-act="forgetpw">Liga-Passwort auf diesem Gerät vergessen</button></p>
+  </section>
+
+  <section data-view="archiv" hidden>
+    <div class="vh"><div><h2>Archiv</h2><p class="meta">Abschlusstabellen und Weltmeister vergangener Saisons</p></div></div>
+    <div id="arch"></div>
+  </section>
+
+  <section data-view="regeln" hidden>
+    <div class="vh"><div><h2>So funktioniert die Liga</h2></div></div>
+    <div class="card pad prose">
+      <h3>Elo</h3>
+      <p>Jede Saison startet jeder bei <b>1000 Elo</b>. Nach jedem Spiel bekommt der Sieger Punkte, die der Verlierer abgibt. Wie viele, hängt vom Unterschied ab: Wer einen Stärkeren schlägt, holt viel, wer als Favorit gewinnt, holt wenig.</p>
+      <ul id="ex"></ul>
+      <p>Die Formel: Siegchance = 1 / (1 + 10<sup>(G − E) / 400</sup>) mit G = Elo des Gegners und E = eigene Elo. Punkte = 32 × (Ergebnis − Siegchance), Ergebnis ist 1 bei Sieg und 0 bei Niederlage. Im 2 gegen 2 zählt der Durchschnitt beider Spieler, und beide bekommen dieselbe Änderung. Die Tore werden gespeichert, verändern die Elo aber nicht.</p>
+      <h3>Titel</h3>
+      <ul class="titles" id="titles"></ul>
+      <p>Titel richten sich nach der aktuellen Elo. Wer abrutscht, verliert ihn wieder.</p>
+      <h3>Serien und Erfolge</h3>
+      <ul class="titles" id="achl"></ul>
+      <p>Die Flamme zeigt die laufende Serie und erlischt bei der nächsten Niederlage. Erfolge bleiben die ganze Saison stehen. Beides zählt pro Saison, im Spielerprofil steht zusätzlich die Bilanz über alle Saisons.</p>
+      <h3>Saisons und Weltmeister</h3>
+      <p>Eine Saison dauert ein TUM-Semester: Wintersemester 1. Oktober bis 31. März, Sommersemester 1. April bis 30. September. Danach startet wieder jeder bei 1000.</p>
+      <p>Die Tabelle ist immer nach Elo sortiert. Wer am Saisonende die höchste Elo und mindestens 10 Spiele hat, wird <b>Weltmeister</b>, auch wenn jemand mit weniger Spielen weiter oben steht. Wer das gerade wäre, trägt in der Tabelle den Hinweis „Auf Titelkurs“. Der Weltmeister trägt die Krone die ganze nächste Saison neben dem Namen. Hat niemand 10 Spiele, zählt einfach die höchste Elo.</p>
+      <p>Im Archiv stehen die Abschlusstabellen und die Saison-Awards: Dauerbrenner (meiste Spiele), Serienkönig (längste Siegesserie), Torfabrik (meiste Tore), Mauer (meiste Weiße Westen), Riesentöter (meiste Überraschungssiege) und das beste Duo.</p>
+      <h3>Korrekturen</h3>
+      <p>Zum Eintragen braucht jeder einmal das Liga-Passwort, danach merkt sich das Gerät es. Falsch eingetragen? Direkt nach dem Speichern auf „Rückgängig“ tippen, oder später unter „Spiele“ löschen und neu eintragen, die Elo wird automatisch neu berechnet. Spiele abgeschlossener Saisons bleiben unverändert.</p>
+    </div>
+  </section>
+</main>
+<div id="ov" class="ov" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Spielerprofil"></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const SUPABASE_URL=((window.KICKERLIGA||{}).url||'').trim().replace(/\/+$/,''),SUPABASE_KEY=((window.KICKERLIGA||{}).key||'').trim();
+{
+const K=32,START=1000,MIN_GAMES=10,STREAK=3,HOT=5,MAXFIRE=10,GIANT=.3,DUO_MIN=3,VIEWS=['tabelle','eintragen','spiele','statistik','spieler','archiv','regeln'];
+const CLOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 8v5l3.5 2.5M9 1.5h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+const BALL='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5l4.3 3.1-1.6 5h-5.4l-1.6-5z" fill="currentColor"/></svg>';
+const DUO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3.6" fill="currentColor"/><circle cx="16.5" cy="8" r="3.6" fill="currentColor" opacity=".6"/><path d="M1.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6z" fill="currentColor"/><path d="M10.5 20c0-3.6 2.6-6 6-6s6 2.4 6 6z" fill="currentColor" opacity=".6"/></svg>';
+const FLAME='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="o" d="M12 23c-4.4 0-8-3.1-8-7.6 0-3.4 2.1-5.6 3.7-7.3.6-.6 1.6-.2 1.6.7 0 1.3.7 2.6 1.8 2.6.9 0 1.4-.8 1.2-1.9C11.9 6.6 11.4 4 13 1.6c.4-.6 1.3-.5 1.6.1 1.3 2.5 6.4 5.8 6.4 12.9C21 19.5 17 23 12 23z"/><path class="i" d="M12 21.2c-2.1 0-3.7-1.5-3.7-3.6 0-1.8 1.2-3.1 2.3-4.1.3-.3.8-.1.8.3 0 .9.6 1.6 1.4 1.6.7 0 1.1-.6 1-1.3-.1-.6.5-.9.9-.5.9 1 1.6 2.3 1.6 3.8 0 2.2-1.9 3.8-4.3 3.8z"/></svg>';
+const SHIELD='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 3.5 4.8v6.4c0 5.2 3.6 9.6 8.5 11.3 4.9-1.7 8.5-6.1 8.5-11.3V4.8z" fill="currentColor"/><ellipse cx="12" cy="11.6" rx="3" ry="4.2" fill="none" stroke="#fff" stroke-width="2.2"/></svg>';
+const MEDAL='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="rb1" d="M5 1h5l2.6 7.5H7.6z"/><path class="rb2" d="M14 1h5l-2.6 7.5h-5z"/><circle cx="12" cy="15.5" r="7" fill="currentColor"/><path d="M12 11.2l1.2 2.5 2.7.3-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.3z" fill="#fff"/></svg>';
+const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 1 3.5 13.5h6.8L9 23l11.5-13.2h-7z" fill="currentColor"/></svg>';
+const fireTier=n=>n>=MAXFIRE?['t3','Unaufhaltbar']:n>=HOT?['t2','Glühend']:['','Heiß'];
+const fire=n=>n>=STREAK?`<span class="fire ${fireTier(n)[0]}" title="${n} Siege in Folge">${FLAME}${n}</span>`:'';
+const achs=p=>{const h=(p.shut?`<span class="ach ic-sh" title="Weiße Weste">${SHIELD}${p.shut>1?p.shut:''}</span>`:'')+(p.best>=HOT?`<span class="ach ic-md" title="Serientäter, längste Serie">${MEDAL}${p.best}</span>`:'')+(p.giant?`<span class="ach ic-bt" title="Riesentöter">${BOLT}${p.giant>1?p.giant:''}</span>`:'');return h?`<span class="achs">${h}</span>`:''};
+const TITLES=[[1300,'GM','Großmeister'],[1220,'IM','Internationaler Meister'],[1150,'FM','Flankenmeister'],[1080,'★','Shootingstar'],[1000,'','Stammspieler'],[920,'','Hobbykicker'],[-Infinity,'','Kurbler']];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dShort=new Intl.DateTimeFormat('de-DE',{day:'numeric',month:'long'}),dLong=new Intl.DateTimeFormat('de-DE',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const sg=n=>n>0?'+'+n:n<0?'−'+(-n):'±0',pad=n=>String(n).padStart(2,'0');
+const expect=(ra,rb)=>1/(1+10**((rb-ra)/400)),avg=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const gain=(ra,rb)=>Math.max(1,Math.round(K*(1-expect(ra,rb))));
+const titleOf=(elo,games)=>games?TITLES.find(t=>elo>=t[0]):null;
+const byName=(x,y)=>x.name.localeCompare(y.name,'de');
+const clean=s=>String(s||'').replace(/\s+/g,' ').trim();
+const CROWN='<svg class="crown" viewBox="0 0 24 19" aria-hidden="true"><path d="M2 14 0 3l6 5 6-8 6 8 6-5-2 11z" fill="currentColor"/><rect x="2" y="15.5" width="20" height="3" rx="1.2" fill="currentColor"/></svg>';
+const crownTag=()=>`<span class="wm">${CROWN}Weltmeister</span>`;
+
+function seasonKey(ts){const d=new Date(ts),y=d.getFullYear(),m=d.getMonth();return m>=9?y*2+1:m<=2?(y-1)*2+1:y*2}
+function seasonInfo(k){const y=Math.floor(k/2),w=k%2===1;return{key:k,label:w?`WiSe ${y}/${String(y+1).slice(2)}`:`SoSe ${y}`,start:w?new Date(y,9,1):new Date(y,3,1),end:w?new Date(y+1,3,1):new Date(y,9,1)}}
+const lastDay=s=>new Date(s.end.getFullYear(),s.end.getMonth(),0);
+
+let db=null,readOnly=false,players=[],matches=[],got={p:false,m:false},names=new Map(),S={};
+let editing=null,confirmDel=null,archSel=null,mode='1v1',busy=false,whenTouched=false,selSig='',h2hScope='cur',duoScope='cur',chartSel=[],chartInit=false,lastSaved=null;
+const nm=id=>esc(names.get(id)||'Unbekannt');
+
+function validMatch(m){if(!m||!Array.isArray(m.a)||!Array.isArray(m.b))return false;const all=[...m.a,...m.b];
+  return m.a.length===m.b.length&&(m.a.length===1||m.a.length===2)&&all.every(x=>typeof x==='string')&&new Set(all).size===all.length&&Number.isInteger(m.ga)&&Number.isInteger(m.gb)&&m.ga!==m.gb&&!isNaN(Date.parse(m.playedAt))}
+
+function compute(ms){
+  const st=new Map(),deltas=new Map(),upset=new Set();
+  const P=id=>{let p=st.get(id);if(!p)st.set(id,p={id,elo:START,peak:START,games:0,wins:0,gf:0,ga:0,form:[],hist:[START],rec:{'1v1':[0,0],'2v2':[0,0]},mates:new Map(),opp:new Map(),last:0,cur:0,best:0,shut:0,giant:0});return p};
+  for(const m of ms){
+    const A=m.a.map(P),B=m.b.map(P),ra=avg(A.map(p=>p.elo)),rb=avg(B.map(p=>p.elo)),ea=expect(ra,rb),aw=m.ga>m.gb,d=aw?gain(ra,rb):-gain(rb,ra);
+    deltas.set(m.id,d);if((aw?ea:1-ea)<GIANT)upset.add(m.id);
+    const upd=(T,ch,won,f,a,ex,O)=>T.forEach((p,i)=>{for(const o of O){const r=p.opp.get(o)||{w:0,l:0};if(won)r.w++;else r.l++;p.opp.set(o,r)}p.elo+=ch;p.peak=Math.max(p.peak,p.elo);p.games++;p.wins+=won;p.gf+=f;p.ga+=a;p.form.push(won);p.hist.push(p.elo);p.last=ch;p.rec[m.mode][won?0:1]++;
+      if(won){p.cur++;p.best=Math.max(p.best,p.cur);if(a===0)p.shut++;if(ex<GIANT)p.giant++}else p.cur=0;
+      if(T.length>1){const o=T[1-i].id,x=p.mates.get(o)||{g:0,w:0};x.g++;x.w+=won;p.mates.set(o,x)}});
+    upd(A,d,aw?1:0,m.ga,m.gb,ea,m.b);upd(B,-d,aw?0:1,m.gb,m.ga,1-ea,m.a);
+  }
+  return{st,deltas,upset,table:[...st.values()].sort((x,y)=>y.elo-x.elo||y.wins-x.wins||x.games-y.games)};
+}
+
+function recompute(){
+  const ms=matches.filter(validMatch).map(m=>({...m,mode:m.a.length===2?'2v2':'1v1',t:Date.parse(m.playedAt)}))
+    .sort((x,y)=>x.t-y.t||String(x.createdAt).localeCompare(String(y.createdAt))||x.id.localeCompare(y.id));
+  const by=new Map(),now=Date.now(),curK=seasonKey(now),seasons=new Map();
+  for(const m of ms){const k=seasonKey(m.t);if(!by.has(k))by.set(k,[]);by.get(k).push(m)}
+  for(const [k,list] of by)seasons.set(k,{...seasonInfo(k),matches:list,res:compute(list)});
+  if(!seasons.has(curK))seasons.set(curK,{...seasonInfo(curK),matches:[],res:compute([])});
+  for(const s of seasons.values()){s.done=s.end.getTime()<=now;
+    if(s.done&&s.matches.length){const t=ranked(s.res.table);s.qualified=t[0].games>=MIN_GAMES;s.champ=t[0].id}}
+  for(const s of seasons.values())for(const m of s.matches){m.d=s.res.deltas.get(m.id);m.up=s.res.upset.has(m.id)}
+  const past=[...seasons.values()].filter(s=>s.done&&s.matches.length).sort((a,b)=>b.key-a.key);
+  S={seasons,cur:seasons.get(curK),past,all:ms,holder:past[0]?.champ||null,holderSeason:past[0]||null};
+}
+
+const ranked=t=>[...t.filter(p=>p.games>=MIN_GAMES),...t.filter(p=>p.games<MIN_GAMES)];
+function rows(season,crownId,archive){const t=season.res.table,cand=archive?null:(t.find(p=>p.games>=MIN_GAMES)||{}).id;return t.map((p,i)=>{const ti=titleOf(p.elo,p.games),q=p.games>=MIN_GAMES;
+  return `<button class="row${i===0?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${i+1}</span><span class="who"><span class="nm">${nm(p.id)}${p.id===crownId?crownTag():''}${p.id===cand?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]} · ${p.games} Sp. · ${p.wins}–${p.games-p.wins}${q?'':archive?' · <i>nicht gewertet, unter '+MIN_GAMES+' Spielen</i>':` · <i>noch ${MIN_GAMES-p.games} bis zur Wertung</i>`}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
+
+function matchHTML(m,d,del){const aw=m.ga>m.gb,g=Math.abs(d||0);
+  const side=(ids,won,c)=>`<span class="side ${c}${won?' won':''}"><span>${ids.map(nm).join(' & ')}</span><em>${won?'+':'−'}${g} Elo</em></span>`;
+  const ctl=!del?'':confirmDel===m.id?`<div class="cf">Spiel löschen? Die Elo danach wird neu berechnet. <button class="btn sm danger" data-act="del" data-id="${esc(m.id)}">Löschen</button><button class="btn sm ghost" data-act="nodel">Abbrechen</button></div>`:`<button class="lnk wonly" data-act="askdel" data-id="${esc(m.id)}">Löschen</button>`;
+  const tags=((aw?m.gb:m.ga)===0?` · <span class="ach ic-sh">${SHIELD}Weiße Weste</span>`:'')+(m.up?` · <span class="ach ic-bt">${BOLT}Überraschung</span>`:'');
+  return `<li class="match"><div class="mt">${dLong.format(m.t)} · ${m.mode==='2v2'?'2 gegen 2':'1 gegen 1'}${tags}</div><div class="ml">${side(m.a,aw,'blue')}<b class="score num">${m.ga}:${m.gb}</b>${side(m.b,!aw,'red')}</div>${ctl}</li>`}
+
+function renderHeader(){const c=S.cur,days=Math.max(0,Math.ceil((c.end-Date.now())/864e5));
+  $('#hSeason').textContent=`Saison ${c.label}`;
+  $('#hMeta').textContent=`· ${dShort.format(c.start)} bis ${dShort.format(lastDay(c))} · noch ${days} ${days===1?'Tag':'Tage'}`;
+  $('#hChamp').innerHTML=S.holder?`${CROWN}Weltmeister: <b>${nm(S.holder)}</b> <span>(${S.holderSeason.label})</span>`:`${CROWN}Der erste Weltmeister wird am ${dShort.format(lastDay(c))} gekürt`}
+
+function renderTable(){const c=S.cur,n=c.matches.length,played=new Set(c.res.table.map(p=>p.id)),rest=players.filter(p=>!played.has(p.id)).sort(byName);
+  $('#tMeta').textContent=`${c.label} · ${n} ${n===1?'Spiel':'Spiele'} · Weltmeister-Wertung ab ${MIN_GAMES} Spielen`;
+  let h;
+  if(!(got.p&&got.m)&&!players.length)h='<p class="empty">Lade die Liga …</p>';
+  else if(!players.length)h=`<div class="empty"><b>Noch keine Spieler.</b> Leg unter <a href="#spieler">Spieler</a> alle an, dann kann es losgehen.</div>`;
+  else h=rows(c,S.holder,false)+(rest.length?`<h3 class="grp">Noch ohne Spiel in dieser Saison</h3>`+rest.map(p=>`<button class="row idle" data-pid="${esc(p.id)}" data-season="${c.key}"><span class="rk num">–</span><span class="who"><span class="nm">${esc(p.name)}${p.id===S.holder?crownTag():''}</span><span class="sub">Neuling · startet bei ${START}</span></span><span class="elo num">${START}</span></button>`).join(''):'');
+  $('#table').innerHTML=h}
+
+function renderMatches(){const c=S.cur,list=[...c.matches].reverse();
+  $('#mMeta').textContent=`${c.label} · neueste zuerst · ältere Saisons im Archiv`;
+  $('#mList').innerHTML=list.length?list.map(m=>matchHTML(m,c.res.deltas.get(m.id),true)).join(''):`<li class="empty">In dieser Saison wurde noch nicht gespielt. <a class="wonly" href="#eintragen">Erstes Spiel eintragen</a></li>`}
+
+function renderPlayers(){if(editing&&document.activeElement&&document.activeElement.id==='ren'&&players.some(p=>p.id===editing))return;
+  const cnt=new Map();for(const m of matches)if(validMatch(m))for(const id of [...m.a,...m.b])cnt.set(id,(cnt.get(id)||0)+1);
+  const list=[...players].sort(byName);
+  $('#pCount').textContent=`${list.length} in der Liga · Namen kann jeder ändern`;
+  $('#pList').innerHTML=list.length?list.map(p=>{const n=cnt.get(p.id)||0;
+    if(editing===p.id)return `<li class="pl"><form class="inl" data-form="ren" data-id="${esc(p.id)}" novalidate><input id="ren" maxlength="24" value="${esc(p.name)}" aria-label="Neuer Name für ${esc(p.name)}" autocomplete="off"><button class="btn sm">Speichern</button><button type="button" class="btn sm ghost" data-act="noren">Abbrechen</button></form></li>`;
+    return `<li class="pl"><span class="pn">${esc(p.name)}</span><span class="pg">${n} ${n===1?'Spiel':'Spiele'}</span><button class="lnk wonly" data-act="edit" data-id="${esc(p.id)}">Umbenennen</button>${n?'':`<button class="lnk danger wonly" data-act="pdel" data-id="${esc(p.id)}">Entfernen</button>`}</li>`}).join('')
+    :'<li class="empty">Noch niemand da. Trag oben den ersten Namen ein.</li>'}
+
+function renderArchive(){const el=$('#arch');
+  if(!S.past.length){el.innerHTML=`<div class="card empty"><b>Noch keine abgeschlossene Saison.</b> Die Saison ${S.cur.label} endet am ${dShort.format(lastDay(S.cur))}. Danach steht hier ihre Abschlusstabelle und wer Weltmeister wurde.</div>`;return}
+  const s=S.past.find(x=>x.key===archSel)||S.past[0],ch=s.res.st.get(s.champ);
+  el.innerHTML=`<div class="chips">${S.past.map(x=>`<button class="chip${x.key===s.key?' on':''}" data-act="arch" data-k="${x.key}"><b>${x.label}</b><small>${CROWN}${nm(x.champ)}</small></button>`).join('')}</div>
+  <div class="card champ">${CROWN}<div><span class="lbl">Weltmeister ${s.label}</span><b class="cn">${nm(s.champ)}</b><span class="sub">${ch.elo} Elo · ${ch.games} Spiele · ${ch.wins} Siege${s.qualified?'':` · niemand kam auf ${MIN_GAMES} Spiele, daher zählte die höchste Elo`}</span></div></div>
+  ${awardsHTML(s)}
+  <div class="card list">${rows(s,s.champ,true)}</div>
+  <details class="card"><summary>Alle ${s.matches.length} Spiele dieser Saison</summary><ul class="mlist">${[...s.matches].reverse().map(m=>matchHTML(m,s.res.deltas.get(m.id),false)).join('')}</ul></details>`}
+
+let fp=[],hp=[],h2hInit=false;const oc={};
+function syncGroup(ids,act,list,ph){const seen=new Set();
+  for(const id of act){const s=$('#'+id);if(s.value&&seen.has(s.value))s.value='';if(s.value)seen.add(s.value)}
+  for(const id of ids){const s=$('#'+id),v=s.value,on=act.includes(id),o=list.filter(p=>!on||p.id===v||!seen.has(p.id)),
+    h=`<option value="">${ph}</option>`+o.map(p=>`<option value="${esc(p.id)}">${esc(p.label)}</option>`).join('');
+    if(oc[id]!==h){s.innerHTML=h;oc[id]=h}s.value=o.some(p=>p.id===v)?v:''}}
+function syncOpts(){syncGroup(['a1','a2','b1','b2'],mode==='2v2'?['a1','a2','b1','b2']:['a1','b1'],fp,players.length?'Spieler wählen':'Erst Spieler anlegen');syncGroup(['ha','hb'],['ha','hb'],hp,'Spieler wählen')}
+function fillSelects(){const st=S.cur.res.st,ps=[...players].sort(byName),sig=ps.map(p=>p.id+p.name+(st.get(p.id)?.elo??START)).join('|');
+  if(sig!==selSig){selSig=sig;fp=ps.map(p=>({id:p.id,label:`${p.name} · ${st.get(p.id)?.elo??START}`}));hp=ps.map(p=>({id:p.id,label:p.name}))}
+  syncOpts();
+  if(!h2hInit&&got.p&&got.m&&!$('#ha').value&&!$('#hb').value){const t=S.cur.res.table.length>1?S.cur.res.table:ps;if(t.length>1){h2hInit=true;$('#ha').value=t[0].id;syncOpts();$('#hb').value=t[1].id;syncOpts()}}}
+
+function h2h(a,b,scope){const r={w:[0,0],one:[0,0],two:[0,0],team:{g:0,w:0},gl:[0,0],duels:[]};
+  for(const m of scope==='all'?S.all:S.cur.matches){const aA=m.a.includes(a),aB=m.b.includes(a),bA=m.a.includes(b),bB=m.b.includes(b);
+    if(!(aA||aB)||!(bA||bB))continue;const aw=m.ga>m.gb,aWon=aA?aw:!aw;
+    if(aA===bA){r.team.g++;if(aWon)r.team.w++;continue}
+    r.w[aWon?0:1]++;(m.mode==='1v1'?r.one:r.two)[aWon?0:1]++;
+    if(m.mode==='1v1'){r.gl[0]+=aA?m.ga:m.gb;r.gl[1]+=aA?m.gb:m.ga}r.duels.push(m)}
+  return r}
+
+function renderH2H(){const a=$('#ha').value,b=$('#hb').value,el=$('#h2h');
+  if(!a||!b){el.innerHTML=`<p class="hint">${players.length>1?'Wähle zwei Spieler aus.':'Leg zuerst mindestens zwei Spieler an.'}</p>`;return}
+  if(a===b){el.innerHTML='<p class="hint">Wähle zwei verschiedene Spieler.</p>';return}
+  const r=h2h(a,b,h2hScope),tot=r.w[0]+r.w[1],el2=id=>S.cur.res.st.get(id)?.elo??START,ea=expect(el2(a),el2(b)),pa=Math.round(ea*100);
+  const lead=!tot?`Die beiden haben ${h2hScope==='cur'?'in dieser Saison ':''}noch nicht gegeneinander gespielt.`:r.w[0]===r.w[1]?`Ausgeglichen nach ${tot} ${tot===1?'Duell':'Duellen'}.`:`${r.w[0]>r.w[1]?nm(a):nm(b)} führt nach ${tot} ${tot===1?'Duell':'Duellen'}.`;
+  el.innerHTML=`<div class="duel"><div class="dn bt">${nm(a)}</div><div class="dsc num">${r.w[0]}<span>:</span>${r.w[1]}</div><div class="dn rt">${nm(b)}</div></div>
+  <div class="pbar${tot?'':' none'}"><span class="pb" style="width:${tot?(r.w[0]/tot*100).toFixed(1):50}%"></span></div>
+  <p class="hint center">${lead}</p>
+  <div class="kpis k3"><div><b class="num">${r.one[0]}:${r.one[1]}</b><span>1 gegen 1${r.one[0]+r.one[1]?` · Tore ${r.gl[0]}:${r.gl[1]}`:''}</span></div><div><b class="num">${r.two[0]}:${r.two[1]}</b><span>2 gegen 2 als Gegner</span></div><div><b class="num">${r.team.w}/${r.team.g}</b><span>Siege zusammen im Team</span></div></div>
+  <p class="hint">Aktuelle Elo: ${nm(a)} <b>${el2(a)}</b> · ${nm(b)} <b>${el2(b)}</b>. Siegchance im nächsten 1 gegen 1: <b>${pa} %</b> zu <b>${100-pa} %</b>, Sieg bringt ±${gain(el2(a),el2(b))} beziehungsweise ±${gain(el2(b),el2(a))} Elo.</p>
+  ${tot?`<h3 class="subh">Duelle, neueste zuerst</h3><ul class="mlist">${[...r.duels].reverse().map(m=>matchHTML(m,m.d,false)).join('')}</ul>`:''}`}
+
+function duos(list){const M=new Map();
+  for(const m of list){if(m.mode!=='2v2')continue;const aw=m.ga>m.gb;
+    for(const [T,won,f,a] of [[m.a,aw,m.ga,m.gb],[m.b,!aw,m.gb,m.ga]]){const ids=[...T].sort(),k=ids.join('|'),x=M.get(k)||{ids,g:0,w:0,gf:0,ga:0};x.g++;if(won)x.w++;x.gf+=f;x.ga+=a;M.set(k,x)}}
+  const all=[...M.values()];
+  return{q:all.filter(x=>x.g>=DUO_MIN).sort((x,y)=>y.w/y.g-x.w/x.g||y.w-x.w||y.g-x.g),r:all.filter(x=>x.g<DUO_MIN).sort((x,y)=>y.w-x.w||x.g-y.g)}}
+
+function renderDuos(){const d=duos(duoScope==='all'?S.all:S.cur.matches),el=$('#duos');
+  if(!d.q.length&&!d.r.length){el.innerHTML=`<p class="hint">${duoScope==='cur'?'In dieser Saison':'Bisher'} gab es noch kein 2 gegen 2.</p>`;return}
+  const row=(x,i)=>`<div class="duo"><span class="rk num">${i==null?'–':i+1}</span><span><b>${x.ids.map(nm).join(' & ')}</b><span class="sub" style="display:block">${x.g} ${x.g===1?'Spiel':'Spiele'} · Tore ${x.gf}:${x.ga}</span></span><span class="dv">${Math.round(x.w/x.g*100)} %<small>${x.w}–${x.g-x.w}</small></span></div>`;
+  el.innerHTML=d.q.map((x,i)=>row(x,i)).join('')+(d.r.length?`<h3 class="grp">Unter ${DUO_MIN} gemeinsamen Spielen</h3>`+d.r.map(x=>row(x,null)).join(''):'')}
+
+function awardsHTML(s){const t=[...s.res.st.values()],top=(f,min=1)=>{const mx=Math.max(0,...t.map(f));return mx>=min?{ids:t.filter(p=>f(p)===mx).map(p=>p.id),v:mx}:null};
+  const d=duos(s.matches),bd=d.q[0]||d.r[0];
+  const A=[['Dauerbrenner','meiste Spiele',CLOCK,top(p=>p.games),v=>`${v} Spiele`],['Serienkönig','längste Siegesserie',`<span class="fire t2">${FLAME}</span>`,top(p=>p.best,2),v=>`${v} Siege am Stück`],
+    ['Torfabrik','meiste Tore',BALL,top(p=>p.gf),v=>`${v} Tore`],['Mauer','meiste Weiße Westen',`<span class="ic-sh">${SHIELD}</span>`,top(p=>p.shut),v=>`${v}× zu Null gewonnen`],
+    ['Riesentöter','meiste Überraschungssiege',`<span class="ic-bt">${BOLT}</span>`,top(p=>p.giant),v=>`${v}× unter ${GIANT*100} % Siegchance gewonnen`],
+    ['Bestes Duo','im 2 gegen 2',DUO,bd?{ids:bd.ids,v:bd,duo:1}:null,v=>`${v.w}–${v.g-v.w} · ${Math.round(v.w/v.g*100)} %`]].filter(x=>x[3]);
+  return A.length?`<div class="awards">${A.map(([t1,t2,ic,r,fv])=>`<div class="card aw"><span class="ic">${ic}</span><span class="at">${t1}</span><span class="an">${r.ids.map(nm).join(r.duo?' & ':', ')}</span><span class="av">${fv(r.v)}</span></div>`).join('')}</div>`:''}
+
+const chartRO=new ResizeObserver(()=>drawChart());
+function chartData(){const c=S.cur,ms=c.matches,ids=c.res.table.map(p=>p.id),r=new Map(ids.map(id=>[id,START])),ser=new Map(ids.map(id=>[id,[START]]));
+  for(const m of ms){for(const id of m.a)r.set(id,r.get(id)+m.d);for(const id of m.b)r.set(id,r.get(id)-m.d);for(const id of ids)ser.get(id).push(r.get(id))}
+  return{ms,ids,ser}}
+function drawChart(){const svg=$('#chart'),fig=$('#cfig'),leg=$('#cleg'),D=chartData();S.chart=D;
+  chartSel=chartSel.filter(x=>D.ids.includes(x.id));
+  if(!chartInit&&D.ids.length){chartInit=true;chartSel=D.ids.slice(0,3).map((id,slot)=>({id,slot}))}
+  if(!D.ms.length){fig.hidden=true;leg.innerHTML='';$('#cMeta').textContent='Sobald in dieser Saison Spiele eingetragen sind, siehst du hier, wie sich die Elo aller Spieler entwickelt.';return}
+  fig.hidden=false;$('#cMeta').textContent=`${S.cur.label} · Tippe auf Namen, um bis zu drei Spieler farbig hervorzuheben`;
+  const col=id=>{const x=chartSel.find(c=>c.id===id);return x?`var(--s${x.slot+1})`:null};
+  leg.innerHTML=D.ids.map(id=>{const c=col(id);return `<button class="lg${c?' on':''}" data-act="csel" data-id="${esc(id)}" aria-pressed="${!!c}"${c?` style="--c:${c}"`:''}><i></i>${nm(id)}</button>`}).join('');
+  const W=svg.clientWidth,H=svg.clientHeight;if(!W||!H)return;
+  const N=D.ms.length,L=38,Rm=W<520?70:90,T=10,B=26,vals=[...D.ser.values()].flat(),span=Math.max(...vals)-Math.min(...vals),step=span>320?100:50,lo=Math.floor((Math.min(...vals)-8)/step)*step,hi=Math.ceil((Math.max(...vals)+8)/step)*step;
+  const x=i=>L+i/N*(W-L-Rm),y=v=>T+(hi-v)/(hi-lo)*(H-T-B),path=a=>a.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join('');
+  let g='';for(let v=lo;v<=hi;v+=step)g+=`<line class="gl2${v===START?' base':''}" x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  const ticks=[...new Set([0,Math.round(N/2),N])];g+=ticks.map(i=>`<text class="ax" x="${x(i)}" y="${H-6}" text-anchor="${i===0?'start':i===N?'end':'middle'}">${i===0?'Start':`Spiel ${i}`}</text>`).join('');
+  for(const id of D.ids)if(!col(id))g+=`<path class="ln0" d="${path(D.ser.get(id))}"/>`;
+  const lab=[];for(const c of chartSel){const a=D.ser.get(c.id);g+=`<path class="halo" d="${path(a)}"/><path class="ln1" style="stroke:var(--s${c.slot+1})" d="${path(a)}"/><circle cx="${x(N)}" cy="${y(a[N])}" r="4.5" style="fill:var(--s${c.slot+1})" stroke="var(--card)" stroke-width="2"/>`;lab.push({id:c.id,y:y(a[N])})}
+  lab.sort((p,q)=>p.y-q.y);for(let i=1;i<lab.length;i++)if(lab[i].y-lab[i-1].y<15)lab[i].y=lab[i-1].y+15;
+  const maxC=W<520?7:11;g+=lab.map(l=>{const n=names.get(l.id)||'?';return `<text class="el" x="${x(N)+9}" y="${l.y+4.5}">${esc(n.length>maxC?n.slice(0,maxC-1)+'…':n)}</text>`}).join('');
+  g+=`<line class="xh" id="xh" x1="0" x2="0" y1="${T}" y2="${H-B}" visibility="hidden"/><rect id="hit" x="${L}" y="0" width="${W-L-Rm+10}" height="${H}" fill="transparent"/>`;
+  svg.innerHTML=g;S.cx={x,N,L,Rm,W}}
+function chartHover(e){const c=S.cx,D=S.chart;if(!c||!D||!D.ms.length)return;const r=$('#chart').getBoundingClientRect(),px=e.clientX-r.left,i=Math.max(0,Math.min(c.N,Math.round((px-c.L)/(c.W-c.L-c.Rm)*c.N)));
+  const xh=$('#xh');if(!xh)return;xh.setAttribute('x1',c.x(i));xh.setAttribute('x2',c.x(i));xh.setAttribute('visibility','visible');
+  const tip=$('#ctip');tip.replaceChildren();const tt=document.createElement('div');tt.className='tt';tt.textContent=i===0?'Saisonstart':`Spiel ${i} · ${dLong.format(D.ms[i-1].t)}`;tip.append(tt);
+  const list=(chartSel.length?chartSel.map(s=>({id:s.id,c:`var(--s${s.slot+1})`})):[]).map(o=>({...o,v:D.ser.get(o.id)[i]})).sort((a,b)=>b.v-a.v);
+  if(!list.length){const d=document.createElement('div');d.textContent='Tippe unten auf Namen, um Werte zu sehen.';tip.append(d)}
+  for(const o of list){const d=document.createElement('div'),k=document.createElement('span'),b=document.createElement('b');k.className='k';k.style.background=o.c;b.textContent=o.v;d.append(k,b,document.createTextNode(names.get(o.id)||'?'));tip.append(d)}
+  if(i>0){const m=D.ms[i-1],d=document.createElement('div');d.className='tt';d.textContent=`${m.a.map(id=>names.get(id)||'?').join(' & ')} ${m.ga}:${m.gb} ${m.b.map(id=>names.get(id)||'?').join(' & ')}`;tip.append(d)}
+  tip.hidden=false;const left=c.x(i)+12,w=tip.offsetWidth;tip.style.left=(left+w>c.W?Math.max(0,c.x(i)-12-w):left)+'px'}
+function chartLeave(){const xh=$('#xh');if(xh)xh.setAttribute('visibility','hidden');$('#ctip').hidden=true}
+
+function formVals(){const two=mode==='2v2',a=[$('#a1').value].concat(two?[$('#a2').value]:[]),b=[$('#b1').value].concat(two?[$('#b2').value]:[]);
+  return{a,b,ga:Number($('#ga').value),gb:Number($('#gb').value),when:$('#when').value}}
+
+function renderPred(){const{a,b}=formVals(),all=[...a,...b],el=$('#pred');
+  if(all.some(x=>!x)||new Set(all).size<all.length){el.innerHTML='<p class="hint" style="margin:0">Wähle alle Spieler, dann siehst du hier die Siegchancen und wie viel Elo es zu holen gibt.</p>';return}
+  const r=id=>S.cur.res.st.get(id)?.elo??START,ra=avg(a.map(r)),rb=avg(b.map(r)),ea=expect(ra,rb),pa=Math.round(ea*100);
+  el.innerHTML=`<div class="pbar"><span class="pb" style="width:${(ea*100).toFixed(1)}%"></span></div><div class="prow"><span class="bt">Blau <b class="num">${pa} %</b> · Ø ${Math.round(ra)}</span><span class="rt">Ø ${Math.round(rb)} · <b class="num">${100-pa} %</b> Rot</span></div><p class="hint">Gewinnt Blau: <b>±${gain(ra,rb)} Elo</b> · Gewinnt Rot: <b>±${gain(rb,ra)} Elo</b></p>`}
+
+function renderRules(){
+  $('#ex').innerHTML=`<li>Gleich stark (1000 gegen 1000): Sieger <b>+${gain(1000,1000)}</b>, Verlierer <b>−${gain(1000,1000)}</b></li><li>Favorit (1200) schlägt Außenseiter (1000): nur <b>+${gain(1200,1000)}</b></li><li>Außenseiter (1000) schlägt Favorit (1200): <b>+${gain(1000,1200)}</b></li>`;
+  $('#titles').innerHTML=TITLES.map((t,i)=>`<li><span>${t[1]?`<b class="badge">${t[1]}</b>`:''}</span><span>${t[2]}</span><span class="num">${i===TITLES.length-1?`unter ${TITLES[i-1][0]}`:`ab ${t[0]}`}</span></li>`).join('')+`<li><span>${CROWN}</span><span>Weltmeister: Sieger der Vorsaison, eine Saison lang</span><span class="num">Krone</span></li>`;
+  $('#achl').innerHTML=[[fire(STREAK),'Heiß: laufende Serie, die Zahl zeigt die Siege am Stück',`ab ${STREAK} Siegen`],[fire(HOT),'Glühend: die Flamme wird blau',`ab ${HOT} Siegen`],[fire(MAXFIRE),'Unaufhaltbar: die Flamme wird violett',`ab ${MAXFIRE} Siegen`],
+    [`<span class="ach ic-sh">${SHIELD}</span>`,'Weiße Weste: Sieg, bei dem der Gegner kein Tor geschossen hat','Zahl = wie oft'],[`<span class="ach ic-md">${MEDAL}</span>`,`Serientäter: ${HOT} Siege am Stück geschafft, bleibt die Saison über stehen`,'Zahl = längste Serie'],[`<span class="ach ic-bt">${BOLT}</span>`,`Riesentöter: Sieg mit weniger als ${GIANT*100} % Siegchance`,'Zahl = wie oft']]
+    .map(([i,t,n])=>`<li class="two"><span>${i}</span><span>${t} <small>· ${n}</small></span></li>`).join('')}
+
+function applyRO(){document.body.classList.toggle('ro',readOnly);$('#ro').hidden=!readOnly||!db;
+  $$('#gameF select,#gameF input,#gameF button,#addP input,#addP button').forEach(x=>x.disabled=readOnly)}
+
+function render(){recompute();names=new Map(players.map(p=>[p.id,p.name]));renderHeader();renderTable();renderMatches();renderPlayers();renderArchive();fillSelects();renderPred();renderH2H();renderDuos();drawChart();applyRO()}
+
+function status(t,err){const s=$('#status');s.hidden=!t;s.textContent=t||'';s.classList.toggle('err',!!err)}
+let tt;function toast(t,err,ms,undo){const e=$('#toast');e.innerHTML=`<span>${esc(t)}</span>${undo?'<button class="tb" data-act="undo">Rückgängig</button>':''}`;e.classList.toggle('err',!!err);e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),ms||3200)}
+function setNow(){const d=new Date(),v=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;$('#when').value=v;$('#when').max=v}
+
+function route(){const h0=location.hash.slice(1),h=h0==='vergleich'?'statistik':h0,v=VIEWS.includes(h)?h:'tabelle';
+  $$('[data-view]').forEach(e=>e.hidden=e.dataset.view!==v);$$('.tabs a').forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+v?'page':'false'));
+  const ca=$('.tabs a[aria-current=page]');if(ca&&ca.scrollIntoView)ca.scrollIntoView({inline:'nearest',block:'nearest'});
+  if(v==='eintragen'&&!whenTouched)setNow()}
+
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const PWKEY='kickerliga-pw';
+const getPw=()=>{try{return localStorage.getItem(PWKEY)||''}catch(e){return ''}},setPw=v=>{try{localStorage.setItem(PWKEY,v)}catch(e){}},forgetPw=()=>{try{localStorage.removeItem(PWKEY)}catch(e){}};
+const newId=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12);
+const ERR={bad_password:'Das Liga-Passwort stimmt nicht.',name_taken:'Diesen Namen gibt es schon.',invalid_name:'Der Name muss 1 bis 24 Zeichen lang sein.',has_matches:'Spieler mit Spielen können nicht entfernt werden.',invalid_match:'Das Spiel ist ungültig, bitte die Eingaben prüfen.'};
+async function rpc(fn,args){const{error}=await db.rpc(fn,args);if(error){const e=new Error(error.message||'');e.code=Object.keys(ERR).find(k=>(error.message||'').includes(k))||'unavailable';throw e}}
+const api={addPlayer:(pw,id,name)=>rpc('add_player',{p_pw:pw,p_id:id,p_name:name}),renamePlayer:(pw,id,name)=>rpc('rename_player',{p_pw:pw,p_id:id,p_name:name}),deletePlayer:(pw,id)=>rpc('delete_player',{p_pw:pw,p_id:id}),
+  addMatch:(pw,m)=>rpc('add_match',{p_pw:pw,p_id:m.id,p_a:m.a,p_b:m.b,p_ga:m.ga,p_gb:m.gb,p_played_at:m.playedAt}),deleteMatch:(pw,id)=>rpc('delete_match',{p_pw:pw,p_id:id})};
+async function fetchAll(table,cols){let out=[],from=0;for(;;){const{data,error}=await db.from(table).select(cols).order('created_at').order('id').range(from,from+999);if(error)throw error;out=out.concat(data);if(data.length<1000)return out;from+=1000}}
+async function reload(){const[p,m]=await Promise.all([fetchAll('players','id,name,created_at'),fetchAll('matches','id,a,b,ga,gb,played_at,created_at')]);
+  players=p.map(r=>({id:r.id,name:r.name,createdAt:r.created_at})).filter(x=>typeof x.name==='string'&&clean(x.name));
+  matches=m.map(r=>({id:r.id,a:r.a,b:r.b,ga:r.ga,gb:r.gb,playedAt:r.played_at,createdAt:r.created_at}));got.p=got.m=true;render()}
+let pwResolve=null;
+function askPw(wrong){closeSheet();return new Promise(res=>{pwResolve=res;
+  $('#sheet').innerHTML=`<div class="sh-h"><div><span class="lbl">Einmalig auf diesem Gerät</span><h3>Liga-Passwort</h3></div><button class="x" data-act="close" aria-label="Abbrechen">×</button></div>
+  <form id="pwF" novalidate><p class="hint">${wrong?'<b style="color:var(--red)">Das Passwort stimmt nicht.</b> ':''}Zum Eintragen brauchst du das Passwort eurer Liga. Danach merkt sich dieses Gerät es.</p><input id="pwIn" type="password" autocomplete="current-password" aria-label="Liga-Passwort" style="margin-top:12px"><button class="btn">Weiter</button></form>`;
+  $('#ov').hidden=false;$('#pwIn').focus()})}
+async function write(fn,ok){if(!db){toast('Die Liga ist noch nicht eingerichtet.',true);return false}
+  let pw=getPw();if(!pw){pw=await askPw(false);if(!pw)return false}
+  for(let i=0;i<4;i++){try{await fn(pw);setPw(pw);if(ok)toast(ok);reload().catch(()=>{});return true}catch(e){const c=e&&e.code;
+    if(c==='bad_password'){forgetPw();pw=await askPw(true);if(!pw)return false;continue}
+    if(c==='unavailable'&&i===0){await sleep(500+Math.random()*700);continue}
+    toast(ERR[c]||'Gerade keine Verbindung. Bitte gleich nochmal versuchen.',true);return false}}return false}
+
+function nameErr(n,except){if(!n)return'Bitte einen Namen eingeben.';if(n.length>24)return'Höchstens 24 Zeichen.';
+  if(players.some(p=>p.id!==except&&clean(p.name).toLowerCase()===n.toLowerCase()))return'Diesen Namen gibt es schon.';return''}
+
+function validate(){const v=formVals(),all=[...v.a,...v.b];
+  if(all.some(x=>!x))return'Bitte alle Spieler auswählen.';
+  if(new Set(all).size!==all.length)return'Ein Spieler kann nicht doppelt mitspielen.';
+  if(![v.ga,v.gb].every(g=>Number.isInteger(g)&&g>=0&&g<=99))return'Bitte gültige Tore eintragen (0 bis 99).';
+  if(v.ga===v.gb)return'Unentschieden gibt es beim Kickern nicht: ein Team braucht mehr Tore.';
+  const t=v.when?new Date(v.when):new Date();
+  if(isNaN(t))return'Bitte ein gültiges Datum wählen.';
+  if(t.getTime()>Date.now()+5*6e4)return'Das Datum liegt in der Zukunft.';
+  if(t<S.cur.start)return`Spiele vor dem ${dShort.format(S.cur.start)} gehören zu einer abgeschlossenen Saison und lassen sich nicht mehr eintragen.`;
+  return{...v,t}}
+
+const dTime=new Intl.DateTimeFormat('de-DE',{hour:'2-digit',minute:'2-digit'});let dupOk=false;
+const sameSet=(x,y)=>x.length===y.length&&x.every(i=>y.includes(i));
+async function saveGame(){if(busy)return;if(!whenTouched)setNow();const v=validate(),fm=$('#formMsg');if(typeof v==='string'){fm.textContent=v;return}fm.textContent='';
+  const dup=S.cur.matches.find(m=>Math.abs(m.t-v.t.getTime())<20*6e4&&((sameSet(m.a,v.a)&&sameSet(m.b,v.b)&&m.ga===v.ga&&m.gb===v.gb)||(sameSet(m.a,v.b)&&sameSet(m.b,v.a)&&m.ga===v.gb&&m.gb===v.ga)));
+  if(dup&&!dupOk){fm.innerHTML=`Genau dieses Spiel wurde um ${dTime.format(dup.t)} schon eingetragen. <button type="button" class="btn sm ghost" data-act="dupok">Trotzdem speichern</button>`;return}dupOk=false;
+  busy=true;$('#save').disabled=true;
+  const st=S.cur.res.st,r=id=>st.get(id)?.elo??START,ra=avg(v.a.map(r)),rb=avg(v.b.map(r)),aw=v.ga>v.gb,g=aw?gain(ra,rb):gain(rb,ra);
+  const data={id:newId(),a:v.a,b:v.b,ga:v.ga,gb:v.gb,playedAt:v.t.toISOString()};
+  const ex=[],latest=S.cur.matches.length?S.cur.matches[S.cur.matches.length-1].t:0;
+  if(v.t.getTime()>=latest){if((aw?v.gb:v.ga)===0)ex.push('Weiße Weste');if((aw?expect(ra,rb):expect(rb,ra))<GIANT)ex.push('Riesentöter');
+    for(const id of aw?v.a:v.b){const n=(st.get(id)?.cur||0)+1;if(n>=STREAK)ex.push(`${names.get(id)||'?'} ist ${fireTier(n)[1].toLowerCase()}: ${n} Siege in Folge`)}}
+  const ok=await write(pw=>api.addMatch(pw,data),null);
+  if(ok){lastSaved=data.id;toast(`Gespeichert: ${aw?'Blau':'Rot'} gewinnt ${v.ga}:${v.gb} und holt +${g} Elo${ex.length?' · '+ex.join(' · '):''}`,false,9000,true)}
+  busy=false;$('#save').disabled=readOnly;
+  if(ok){$('#ga').value=0;$('#gb').value=0;whenTouched=false;setNow();renderPred()}}
+
+async function addPlayer(){const i=$('#newName'),n=clean(i.value),err=nameErr(n);if(err){toast(err,true);return}
+  const pid=newId();
+  if(await write(pw=>api.addPlayer(pw,pid,n),`${n} ist jetzt dabei`)){i.value='';i.focus()}}
+
+async function rename(id){const n=clean($('#ren').value),p=players.find(x=>x.id===id);if(p&&clean(p.name)===n){editing=null;render();return}
+  const err=nameErr(n,id);if(err){toast(err,true);return}
+  if(await write(pw=>api.renamePlayer(pw,id,n),'Name geändert')){editing=null;render()}}
+
+function openSheet(k,pid){const s=S.seasons.get(+k),p=s&&s.res.st.get(pid),ti=p&&titleOf(p.elo,p.games),crown=s&&(s.done?s.champ:S.holder)===pid;
+  let h=`<div class="sh-h"><div><span class="lbl">${s?s.label:''}</span><h3>${nm(pid)}${crown?crownTag():''}</h3><span class="sub">${ti?`${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]}`:'Neuling'}</span></div><button class="x" data-act="close" aria-label="Schließen">×</button></div>`;
+  if(!p)h+=`<p class="hint">Noch kein Spiel in dieser Saison, startet bei ${START} Elo.</p>`;
+  else{const op=[...p.opp],fav=op.filter(([,r])=>r.w>r.l).sort((x,y)=>(y[1].w-y[1].l)-(x[1].w-x[1].l)||y[1].w-x[1].w)[0],nem=op.filter(([,r])=>r.l>r.w).sort((x,y)=>(y[1].l-y[1].w)-(x[1].l-x[1].w)||y[1].l-x[1].l)[0],mate=[...p.mates].sort((x,y)=>y[1].w-x[1].w||y[1].g-x[1].g)[0],hs=p.hist,mn=Math.min(...hs),mx=Math.max(...hs),rg=Math.max(mx-mn,20),y=v=>(95-(v-mn)/rg*90).toFixed(1);
+    const pts=hs.map((v,i)=>`${(i/(hs.length-1)*300).toFixed(1)},${y(v)}`).join(' ');
+    h+=`<div class="kpis"><div><b class="num">${p.elo}</b><span>Elo jetzt</span></div><div><b class="num">${p.peak}</b><span>Bestwert</span></div><div><b class="num">${p.wins}–${p.games-p.wins}</b><span>Siege–Niederlagen</span></div><div><b class="num">${Math.round(p.wins/p.games*100)} %</b><span>Siegquote</span></div></div>
+    <div class="curve"><svg viewBox="0 0 300 100" preserveAspectRatio="none" role="img" aria-label="Elo-Verlauf über ${p.games} Spiele"><line x1="0" x2="300" y1="${y(START)}" y2="${y(START)}"/><polyline points="${pts}"/></svg><div class="cl num"><span>${mx}</span><span>${mn}</span></div></div>
+    <ul class="facts"><li>1 gegen 1: <b>${p.rec['1v1'][0]}–${p.rec['1v1'][1]}</b> · 2 gegen 2: <b>${p.rec['2v2'][0]}–${p.rec['2v2'][1]}</b></li><li>Tore: <b>${p.gf}:${p.ga}</b></li>${mate?`<li>Bester Partner: <b>${nm(mate[0])}</b> (${mate[1].w} von ${mate[1].g} gewonnen)</li>`:''}<li>Lieblingsgegner: ${fav?`<b>${nm(fav[0])}</b> (${fav[1].w}:${fav[1].l})`:'noch keiner'}</li><li>Angstgegner: ${nem?`<b>${nm(nem[0])}</b> (${nem[1].w}:${nem[1].l})`:'noch keiner'}</li></ul>
+    <h3 class="subh">Serie und Erfolge</h3>
+    <ul class="achlist"><li class="${p.cur>=STREAK?'':'off'}"><span>${p.cur>=STREAK?fire(p.cur):`<span class="fire">${FLAME}</span>`}</span><span>${p.cur>=STREAK?`${fireTier(p.cur)[1]}: ${p.cur} Siege in Folge`:p.cur?`${p.cur} ${p.cur===1?'Sieg':'Siege'} in Folge, ab ${STREAK} brennt die Flamme`:'Gerade keine Siegesserie'}${s.done?' (zum Saisonende)':''}</span><span></span></li>
+    <li class="${p.shut?'':'off'}"><span class="ach ic-sh">${SHIELD}</span><span>Weiße Weste</span><span class="num">${p.shut}×</span></li>
+    <li class="${p.best>=HOT?'':'off'}"><span class="ach ic-md">${MEDAL}</span><span>Serientäter · längste Serie</span><span class="num">${p.best}</span></li>
+    <li class="${p.giant?'':'off'}"><span class="ach ic-bt">${BOLT}</span><span>Riesentöter</span><span class="num">${p.giant}×</span></li></ul>`}
+  let cs=0,cb=0,cg=0,cw=0;for(const x of S.seasons.values()){const q=x.res.st.get(pid);if(q){cs+=q.shut;cb=Math.max(cb,q.best);cg+=q.giant}if(x.champ===pid&&x.done)cw++}
+  if(S.past.length)h+=`<p class="career">Alle Saisons: längste Serie <b>${cb}</b> · <b>${cs}×</b> Weiße Weste · <b>${cg}×</b> Riesentöter · <b>${cw}×</b> Weltmeister</p>`;
+  if(players.length>1)h+=`<button class="btn ghost" data-act="cmp" data-id="${esc(pid)}">Direkter Vergleich mit …</button>`;
+  $('#sheet').innerHTML=h;$('#ov').hidden=false;$('#sheet .x').focus()}
+const closeSheet=()=>{$('#ov').hidden=true;if(pwResolve){const r=pwResolve;pwResolve=null;r(null)}};
+
+document.addEventListener('click',async e=>{
+  if(e.target.id==='ov'){closeSheet();return}
+  const b=e.target.closest('[data-act]'),r=e.target.closest('[data-pid]');
+  if(r&&!b){openSheet(r.dataset.season,r.dataset.pid);return}
+  if(!b)return;const a=b.dataset.act,id=b.dataset.id;
+  if(a==='mode'||a==='scope'||a==='dscope')b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  if(a==='mode'){mode=b.dataset.m;if(mode==='2v2'){const one=[$('#a1').value,$('#b1').value];for(const x of ['a2','b2'])if(one.includes($('#'+x).value))$('#'+x).value=''}$('#gameF').classList.toggle('two',mode==='2v2');syncOpts();renderPred()}
+  else if(a==='scope'){h2hScope=b.dataset.s;renderH2H()}
+  else if(a==='dscope'){duoScope=b.dataset.s;renderDuos()}
+  else if(a==='csel'){const i=chartSel.findIndex(x=>x.id===id);if(i>=0)chartSel.splice(i,1);else{if(chartSel.length>=3)chartSel.shift();const used=chartSel.map(x=>x.slot);chartSel.push({id,slot:[0,1,2].find(k=>!used.includes(k))})}drawChart()}
+  else if(a==='undo'){const mid=lastSaved;lastSaved=null;$('#toast').classList.remove('on');if(mid)await write(pw=>api.deleteMatch(pw,mid),'Spiel zurückgenommen')}
+  else if(a==='cmp'){const hb=$('#hb');if(hb.value===id)hb.value='';syncOpts();$('#ha').value=id;syncOpts();
+    if(!hb.value){const o=S.cur.res.table.find(p=>p.id!==id)||players.find(p=>p.id!==id);if(o){hb.value=o.id;syncOpts()}}
+    closeSheet();renderH2H();location.hash='statistik';window.scrollTo(0,0)}
+  else if(a==='step'){const i=$('#'+b.dataset.t);i.value=Math.min(99,Math.max(0,(parseInt(i.value,10)||0)+Number(b.dataset.d)));$('#formMsg').textContent=''}
+  else if(a==='dupok'){dupOk=true;await saveGame()}
+  else if(a==='askdel'){confirmDel=id;renderMatches()}
+  else if(a==='nodel'){confirmDel=null;renderMatches()}
+  else if(a==='del'){b.disabled=true;if(await write(pw=>api.deleteMatch(pw,id),'Spiel gelöscht, Elo neu berechnet'))confirmDel=null;render()}
+  else if(a==='edit'){editing=id;renderPlayers();const i=$('#ren');if(i){i.focus();i.select()}}
+  else if(a==='noren'){editing=null;renderPlayers()}
+  else if(a==='pdel'){const p=players.find(x=>x.id===id);b.disabled=true;await write(pw=>api.deletePlayer(pw,id),p?`${p.name} entfernt`:'Entfernt')}
+  else if(a==='arch'){archSel=+b.dataset.k;renderArchive()}
+  else if(a==='forgetpw'){forgetPw();toast('Passwort auf diesem Gerät vergessen')}
+  else if(a==='close')closeSheet()});
+document.addEventListener('submit',async e=>{e.preventDefault();const f=e.target;
+  if(f.id==='pwF'){const v=$('#pwIn').value.trim();if(!v)return;const r=pwResolve;pwResolve=null;$('#ov').hidden=true;if(r)r(v);return}
+  if(f.id==='gameF')await saveGame();else if(f.id==='addP')await addPlayer();else if(f.dataset.form==='ren')await rename(f.dataset.id)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#ov').hidden)closeSheet();else if(editing){editing=null;renderPlayers()}}});
+['a1','a2','b1','b2'].forEach(id=>$('#'+id).addEventListener('change',()=>{$('#formMsg').textContent='';dupOk=false;syncOpts();renderPred()}));
+['ha','hb'].forEach(id=>$('#'+id).addEventListener('change',()=>{syncOpts();renderH2H()}));
+['ga','gb'].forEach(id=>$('#'+id).addEventListener('input',()=>{$('#formMsg').textContent=''}));
+$('#when').addEventListener('input',()=>{whenTouched=true});
+addEventListener('hashchange',()=>{route();drawChart()});
+$('#chart').addEventListener('pointermove',chartHover);$('#chart').addEventListener('pointerdown',chartHover);$('#chart').addEventListener('pointerleave',chartLeave);chartRO.observe($('#cfig'));
+
+renderRules();route();render();
+(async()=>{
+  if(!SUPABASE_URL||!SUPABASE_KEY||!window.supabase){got.p=got.m=true;status(!window.supabase?'Die Datenbank-Bibliothek konnte nicht geladen werden. Prüfe deine Verbindung und lade die Seite neu.':'Noch nicht eingerichtet: Trage in der Datei config.js die Project URL und den Publishable key aus Supabase ein.',true);render();return}
+  try{db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false}})}catch(e){got.p=got.m=true;status('Die Project URL oder der Publishable key in config.js ist ungültig.',true);render();return}
+  const load=async()=>{try{await reload();status('')}catch(e){status(players.length?'Die Liga ist gerade nicht erreichbar, die Anzeige ist vielleicht nicht aktuell. Die Seite versucht es weiter.':'Die Liga ist gerade nicht erreichbar. Die Seite versucht es weiter.',true);setTimeout(load,15000)}};
+  await load();
+  let t;const sched=()=>{clearTimeout(t);t=setTimeout(()=>reload().catch(()=>{}),400)};
+  try{db.channel('liga').on('postgres_changes',{event:'*',schema:'public',table:'players'},sched).on('postgres_changes',{event:'*',schema:'public',table:'matches'},sched).subscribe()}catch(e){}
+  setInterval(()=>{if(document.visibilityState==='visible')reload().catch(()=>{})},60000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reload().catch(()=>{})});
+})();
+}
+</script>
+</body>
+</html>
