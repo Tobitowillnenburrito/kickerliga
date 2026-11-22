@@ -251,9 +251,9 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
     <div class="vh"><div><h2>So funktioniert die Liga</h2></div></div>
     <div class="card pad prose">
       <h3>Elo</h3>
-      <p>Jede Saison startet jeder bei <b>1000 Elo</b>. Nach jedem Spiel bekommt der Sieger Punkte, die der Verlierer abgibt. Wie viele, hängt vom Unterschied ab: Wer einen Stärkeren schlägt, holt viel, wer als Favorit gewinnt, holt wenig.</p>
+      <p>Jede Saison startet jeder bei <b>1000 Elo</b>. Nach jedem Spiel bekommt der Sieger Punkte, die der Verlierer abgibt. Wie viele, hängt vom Elo-Unterschied ab und davon, wie deutlich das Ergebnis ist: Wer einen Stärkeren schlägt, holt viel, wer als Favorit gewinnt, holt wenig.</p>
       <ul id="ex"></ul>
-      <p>Die Formel: Siegchance = 1 / (1 + 10<sup>(G − E) / 400</sup>) mit G = Elo des Gegners und E = eigene Elo. Punkte = 32 × (Ergebnis − Siegchance), Ergebnis ist 1 bei Sieg und 0 bei Niederlage. Im 2 gegen 2 zählt der Durchschnitt beider Spieler, und beide bekommen dieselbe Änderung. Die Tore werden gespeichert, verändern die Elo aber nicht.</p>
+      <p>Die Formel: Siegchance = 1 / (1 + 10<sup>(G − E) / 400</sup>) mit G = Elo des Gegners und E = eigene Elo. Punkte = 40 × (Ergebnis − Siegchance) × Torfaktor, Ergebnis ist 1 bei Sieg und 0 bei Niederlage. Der Torfaktor belohnt deutliche Siege: Torfaktor = 0,75 + (Tordifferenz − 2) ÷ 16, also 0,75 bei 2 Toren Abstand oder weniger und höchstens 1,25 ab 10 Toren Abstand. Im 2 gegen 2 zählt der Durchschnitt beider Spieler, und beide bekommen dieselbe Änderung.</p>
       <h3>Titel</h3>
       <ul class="titles" id="titles"></ul>
       <p>Titel richten sich nach der aktuellen Elo. Wer abrutscht, verliert ihn wieder.</p>
@@ -276,7 +276,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
 <script>
 const SUPABASE_URL=((window.KICKERLIGA||{}).url||'').trim().replace(/\/+$/,''),SUPABASE_KEY=((window.KICKERLIGA||{}).key||'').trim();
 {
-const K=32,START=1000,MIN_GAMES=10,STREAK=3,HOT=5,MAXFIRE=10,GIANT=.3,DUO_MIN=3,VIEWS=['tabelle','eintragen','spiele','statistik','spieler','archiv','regeln'];
+const K=40,START=1000,MIN_GAMES=10,STREAK=3,HOT=5,MAXFIRE=10,GIANT=.3,DUO_MIN=3,VIEWS=['tabelle','eintragen','spiele','statistik','spieler','archiv','regeln'];
 const CLOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 8v5l3.5 2.5M9 1.5h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
 const BALL='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5l4.3 3.1-1.6 5h-5.4l-1.6-5z" fill="currentColor"/></svg>';
 const DUO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3.6" fill="currentColor"/><circle cx="16.5" cy="8" r="3.6" fill="currentColor" opacity=".6"/><path d="M1.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6z" fill="currentColor"/><path d="M10.5 20c0-3.6 2.6-6 6-6s6 2.4 6 6z" fill="currentColor" opacity=".6"/></svg>';
@@ -287,13 +287,15 @@ const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 1 3.5 13.5h
 const fireTier=n=>n>=MAXFIRE?['t3','Unaufhaltbar']:n>=HOT?['t2','Glühend']:['','Heiß'];
 const fire=n=>n>=STREAK?`<span class="fire ${fireTier(n)[0]}" title="${n} Siege in Folge">${FLAME}${n}</span>`:'';
 const achs=p=>{const h=(p.shut?`<span class="ach ic-sh" title="Weiße Weste">${SHIELD}${p.shut>1?p.shut:''}</span>`:'')+(p.best>=HOT?`<span class="ach ic-md" title="Serientäter, längste Serie">${MEDAL}${p.best}</span>`:'')+(p.giant?`<span class="ach ic-bt" title="Riesentöter">${BOLT}${p.giant>1?p.giant:''}</span>`:'');return h?`<span class="achs">${h}</span>`:''};
-const TITLES=[[1300,'GM','Großmeister'],[1220,'IM','Internationaler Meister'],[1150,'FM','Flankenmeister'],[1080,'★','Shootingstar'],[1000,'','Stammspieler'],[920,'','Hobbykicker'],[-Infinity,'','Kurbler']];
+const TITLES=[[1180,'GM','Großmeister'],[1130,'IM','Internationaler Meister'],[1080,'FM','Flankenmeister'],[1040,'★','Shootingstar'],[1000,'','Stammspieler'],[930,'','Hobbykicker'],[-Infinity,'','Kurbler']];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dShort=new Intl.DateTimeFormat('de-DE',{day:'numeric',month:'long'}),dLong=new Intl.DateTimeFormat('de-DE',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 const sg=n=>n>0?'+'+n:n<0?'−'+(-n):'±0',pad=n=>String(n).padStart(2,'0');
 const expect=(ra,rb)=>1/(1+10**((rb-ra)/400)),avg=a=>a.reduce((s,x)=>s+x,0)/a.length;
-const gain=(ra,rb)=>Math.max(1,Math.round(K*(1-expect(ra,rb))));
+const MF_MIN=.75,MF_MAX=1.25,mf=(ga,gb)=>Math.min(MF_MAX,Math.max(MF_MIN,MF_MIN+(Math.abs(ga-gb)-2)/16));
+const gain=(ra,rb,f=1)=>Math.max(1,Math.round(K*f*(1-expect(ra,rb))));
+const range=(ra,rb)=>`+${gain(ra,rb,MF_MIN)} bis +${gain(ra,rb,MF_MAX)}`;
 const titleOf=(elo,games)=>games?TITLES.find(t=>elo>=t[0]):null;
 const byName=(x,y)=>x.name.localeCompare(y.name,'de');
 const clean=s=>String(s||'').replace(/\s+/g,' ').trim();
@@ -315,7 +317,7 @@ function compute(ms){
   const st=new Map(),deltas=new Map(),upset=new Set();
   const P=id=>{let p=st.get(id);if(!p)st.set(id,p={id,elo:START,peak:START,games:0,wins:0,gf:0,ga:0,form:[],hist:[START],rec:{'1v1':[0,0],'2v2':[0,0]},mates:new Map(),opp:new Map(),last:0,cur:0,best:0,shut:0,giant:0});return p};
   for(const m of ms){
-    const A=m.a.map(P),B=m.b.map(P),ra=avg(A.map(p=>p.elo)),rb=avg(B.map(p=>p.elo)),ea=expect(ra,rb),aw=m.ga>m.gb,d=aw?gain(ra,rb):-gain(rb,ra);
+    const A=m.a.map(P),B=m.b.map(P),ra=avg(A.map(p=>p.elo)),rb=avg(B.map(p=>p.elo)),ea=expect(ra,rb),aw=m.ga>m.gb,f=mf(m.ga,m.gb),d=aw?gain(ra,rb,f):-gain(rb,ra,f);
     deltas.set(m.id,d);if((aw?ea:1-ea)<GIANT)upset.add(m.id);
     const upd=(T,ch,won,f,a,ex,O)=>T.forEach((p,i)=>{for(const o of O){const r=p.opp.get(o)||{w:0,l:0};if(won)r.w++;else r.l++;p.opp.set(o,r)}p.elo+=ch;p.peak=Math.max(p.peak,p.elo);p.games++;p.wins+=won;p.gf+=f;p.ga+=a;p.form.push(won);p.hist.push(p.elo);p.last=ch;p.rec[m.mode][won?0:1]++;
       if(won){p.cur++;p.best=Math.max(p.best,p.cur);if(a===0)p.shut++;if(ex<GIANT)p.giant++}else p.cur=0;
@@ -413,7 +415,7 @@ function renderH2H(){const a=$('#ha').value,b=$('#hb').value,el=$('#h2h');
   <div class="pbar${tot?'':' none'}"><span class="pb" style="width:${tot?(r.w[0]/tot*100).toFixed(1):50}%"></span></div>
   <p class="hint center">${lead}</p>
   <div class="kpis k3"><div><b class="num">${r.one[0]}:${r.one[1]}</b><span>1 gegen 1${r.one[0]+r.one[1]?` · Tore ${r.gl[0]}:${r.gl[1]}`:''}</span></div><div><b class="num">${r.two[0]}:${r.two[1]}</b><span>2 gegen 2 als Gegner</span></div><div><b class="num">${r.team.w}/${r.team.g}</b><span>Siege zusammen im Team</span></div></div>
-  <p class="hint">Aktuelle Elo: ${nm(a)} <b>${el2(a)}</b> · ${nm(b)} <b>${el2(b)}</b>. Siegchance im nächsten 1 gegen 1: <b>${pa} %</b> zu <b>${100-pa} %</b>, Sieg bringt ±${gain(el2(a),el2(b))} beziehungsweise ±${gain(el2(b),el2(a))} Elo.</p>
+  <p class="hint">Aktuelle Elo: ${nm(a)} <b>${el2(a)}</b> · ${nm(b)} <b>${el2(b)}</b>. Siegchance im nächsten 1 gegen 1: <b>${pa} %</b> zu <b>${100-pa} %</b>, ein Sieg bringt je nach Ergebnis ${range(el2(a),el2(b))} beziehungsweise ${range(el2(b),el2(a))} Elo.</p>
   ${tot?`<h3 class="subh">Duelle, neueste zuerst</h3><ul class="mlist">${[...r.duels].reverse().map(m=>matchHTML(m,m.d,false)).join('')}</ul>`:''}`}
 
 function duos(list){const M=new Map();
@@ -473,10 +475,11 @@ function formVals(){const two=mode==='2v2',a=[$('#a1').value].concat(two?[$('#a2
 function renderPred(){const{a,b}=formVals(),all=[...a,...b],el=$('#pred');
   if(all.some(x=>!x)||new Set(all).size<all.length){el.innerHTML='<p class="hint" style="margin:0">Wähle alle Spieler, dann siehst du hier die Siegchancen und wie viel Elo es zu holen gibt.</p>';return}
   const r=id=>S.cur.res.st.get(id)?.elo??START,ra=avg(a.map(r)),rb=avg(b.map(r)),ea=expect(ra,rb),pa=Math.round(ea*100);
-  el.innerHTML=`<div class="pbar"><span class="pb" style="width:${(ea*100).toFixed(1)}%"></span></div><div class="prow"><span class="bt">Blau <b class="num">${pa} %</b> · Ø ${Math.round(ra)}</span><span class="rt">Ø ${Math.round(rb)} · <b class="num">${100-pa} %</b> Rot</span></div><p class="hint">Gewinnt Blau: <b>±${gain(ra,rb)} Elo</b> · Gewinnt Rot: <b>±${gain(rb,ra)} Elo</b></p>`}
+  el.innerHTML=`<div class="pbar"><span class="pb" style="width:${(ea*100).toFixed(1)}%"></span></div><div class="prow"><span class="bt">Blau <b class="num">${pa} %</b> · Ø ${Math.round(ra)}</span><span class="rt">Ø ${Math.round(rb)} · <b class="num">${100-pa} %</b> Rot</span></div><p class="hint">Gewinnt Blau: <b>${range(ra,rb)} Elo</b> · Gewinnt Rot: <b>${range(rb,ra)} Elo</b><br>Je deutlicher der Sieg, desto mehr: knapp (2 Tore Abstand) gibt am wenigsten, 10:0 am meisten.</p>`}
 
 function renderRules(){
-  $('#ex').innerHTML=`<li>Gleich stark (1000 gegen 1000): Sieger <b>+${gain(1000,1000)}</b>, Verlierer <b>−${gain(1000,1000)}</b></li><li>Favorit (1200) schlägt Außenseiter (1000): nur <b>+${gain(1200,1000)}</b></li><li>Außenseiter (1000) schlägt Favorit (1200): <b>+${gain(1000,1200)}</b></li>`;
+  const eq=(a,b)=>gain(1000,1000,mf(a,b));
+  $('#ex').innerHTML=`<li>Gleich stark (1000 gegen 1000): knapper Sieg wie 10:8 oder 12:10 <b>+${eq(10,8)}</b>, 10:4 <b>+${eq(10,4)}</b>, 10:0 <b>+${eq(10,0)}</b>. Der Verlierer verliert jeweils genauso viel.</li><li>Favorit (1200) schlägt Außenseiter (1000) 10:5: nur <b>+${gain(1200,1000,mf(10,5))}</b></li><li>Außenseiter (1000) schlägt Favorit (1200) 10:5: <b>+${gain(1000,1200,mf(10,5))}</b></li>`;
   $('#titles').innerHTML=TITLES.map((t,i)=>`<li><span>${t[1]?`<b class="badge">${t[1]}</b>`:''}</span><span>${t[2]}</span><span class="num">${i===TITLES.length-1?`unter ${TITLES[i-1][0]}`:`ab ${t[0]}`}</span></li>`).join('')+`<li><span>${CROWN}</span><span>Weltmeister: Sieger der Vorsaison, eine Saison lang</span><span class="num">Krone</span></li>`;
   $('#achl').innerHTML=[[fire(STREAK),'Heiß: laufende Serie, die Zahl zeigt die Siege am Stück',`ab ${STREAK} Siegen`],[fire(HOT),'Glühend: die Flamme wird blau',`ab ${HOT} Siegen`],[fire(MAXFIRE),'Unaufhaltbar: die Flamme wird violett',`ab ${MAXFIRE} Siegen`],
     [`<span class="ach ic-sh">${SHIELD}</span>`,'Weiße Weste: Sieg, bei dem der Gegner kein Tor geschossen hat','Zahl = wie oft'],[`<span class="ach ic-md">${MEDAL}</span>`,`Serientäter: ${HOT} Siege am Stück geschafft, bleibt die Saison über stehen`,'Zahl = längste Serie'],[`<span class="ach ic-bt">${BOLT}</span>`,`Riesentöter: Sieg mit weniger als ${GIANT*100} % Siegchance`,'Zahl = wie oft']]
@@ -540,7 +543,7 @@ async function saveGame(){if(busy)return;if(!whenTouched)setNow();const v=valida
   const dup=S.cur.matches.find(m=>Math.abs(m.t-v.t.getTime())<20*6e4&&((sameSet(m.a,v.a)&&sameSet(m.b,v.b)&&m.ga===v.ga&&m.gb===v.gb)||(sameSet(m.a,v.b)&&sameSet(m.b,v.a)&&m.ga===v.gb&&m.gb===v.ga)));
   if(dup&&!dupOk){fm.innerHTML=`Genau dieses Spiel wurde um ${dTime.format(dup.t)} schon eingetragen. <button type="button" class="btn sm ghost" data-act="dupok">Trotzdem speichern</button>`;return}dupOk=false;
   busy=true;$('#save').disabled=true;
-  const st=S.cur.res.st,r=id=>st.get(id)?.elo??START,ra=avg(v.a.map(r)),rb=avg(v.b.map(r)),aw=v.ga>v.gb,g=aw?gain(ra,rb):gain(rb,ra);
+  const st=S.cur.res.st,r=id=>st.get(id)?.elo??START,ra=avg(v.a.map(r)),rb=avg(v.b.map(r)),aw=v.ga>v.gb,f=mf(v.ga,v.gb),g=aw?gain(ra,rb,f):gain(rb,ra,f);
   const data={id:newId(),a:v.a,b:v.b,ga:v.ga,gb:v.gb,playedAt:v.t.toISOString()};
   const ex=[],latest=S.cur.matches.length?S.cur.matches[S.cur.matches.length-1].t:0;
   if(v.t.getTime()>=latest){if((aw?v.gb:v.ga)===0)ex.push('Weiße Weste');if((aw?expect(ra,rb):expect(rb,ra))<GIANT)ex.push('Riesentöter');
