@@ -1,0 +1,15 @@
+name: Datenbank wach halten
+on:
+  schedule:
+    - cron: '23 5 */3 * *'   # alle 3 Tage morgens
+  workflow_dispatch:          # erlaubt "Run workflow" per Hand
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Supabase kurz anfragen
+        run: |
+          URL=$(grep -oP "url:\s*'\K[^']+" config.js)
+          KEY=$(grep -oP "key:\s*'\K[^']+" config.js)
+          curl -fsS "$URL/rest/v1/players?select=id&limit=1" -H "apikey: $KEY" -o /dev/null -w "Supabase antwortet: %{http_code}\n"
