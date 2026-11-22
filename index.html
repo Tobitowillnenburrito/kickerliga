@@ -8,8 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kickerliga">
 <link rel="apple-touch-icon" href="icon.png"><link rel="icon" type="image/png" href="icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts.css">
 <style>
 /* VOICE: Aushang im Vereinsheim – sportlich, knapp, mit Augenzwinkern
    IDEA: die Anzeigetafel neben dem Kickertisch
@@ -272,7 +271,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
 </main>
 <div id="ov" class="ov" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Spielerprofil"></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
 <script src="config.js"></script>
 <script>
 const SUPABASE_URL=((window.KICKERLIGA||{}).url||'').trim().replace(/\/+$/,''),SUPABASE_KEY=((window.KICKERLIGA||{}).key||'').trim();
@@ -616,7 +615,7 @@ $('#chart').addEventListener('pointermove',chartHover);$('#chart').addEventListe
 
 renderRules();route();render();
 (async()=>{
-  if(!SUPABASE_URL||!SUPABASE_KEY||!window.supabase){got.p=got.m=true;status(!window.supabase?'Die Datenbank-Bibliothek konnte nicht geladen werden. Prüfe deine Verbindung und lade die Seite neu.':'Noch nicht eingerichtet: Trage in der Datei config.js die Project URL und den Publishable key aus Supabase ein.',true);render();return}
+  if(!SUPABASE_URL||!SUPABASE_KEY||!window.supabase){got.p=got.m=true;status(!window.supabase?'Die Datei supabase.js fehlt oder konnte nicht geladen werden. Prüfe, ob sie im GitHub-Repository liegt, und lade die Seite neu.':'Noch nicht eingerichtet: Trage in der Datei config.js die Project URL und den Publishable key aus Supabase ein.',true);render();return}
   try{db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false}})}catch(e){got.p=got.m=true;status('Die Project URL oder der Publishable key in config.js ist ungültig.',true);render();return}
   const load=async()=>{try{await reload();status('')}catch(e){status(players.length?'Die Liga ist gerade nicht erreichbar, die Anzeige ist vielleicht nicht aktuell. Die Seite versucht es weiter.':'Die Liga ist gerade nicht erreichbar. Die Seite versucht es weiter.',true);setTimeout(load,15000)}};
   await load();
