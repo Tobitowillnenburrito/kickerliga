@@ -264,7 +264,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
       <p>Die Flamme zeigt die laufende Serie und erlischt bei der nächsten Niederlage. Erfolge bleiben die ganze Saison stehen. Beides zählt pro Saison, im Spielerprofil steht zusätzlich die Bilanz über alle Saisons.</p>
       <h3>Saisons und Weltmeister</h3>
       <p>Eine Saison dauert ein TUM-Semester: Wintersemester 1. Oktober bis 31. März, Sommersemester 1. April bis 30. September. Danach startet wieder jeder bei 1000.</p>
-      <p>Die Tabelle ist nach Elo sortiert, und jedes Spiel zählt ab dem ersten. Wer gerade vorne liegt, trägt den Hinweis „Auf Titelkurs“. Wer am Saisonende oben steht, wird <b>Weltmeister</b> und trägt die Krone die ganze nächste Saison neben dem Namen.</p>
+      <p>Die Tabelle ist nach Elo sortiert, und jedes Spiel zählt ab dem ersten. Wer gerade vorne liegt, trägt den Hinweis „Auf Titelkurs“, bei gleicher Elo alle Punktgleichen. Wer am Saisonende oben steht, wird <b>Weltmeister</b>. Bei Gleichstand entscheiden die meisten Siege, danach weniger Spiele. Der Weltmeister trägt die Krone die ganze nächste Saison neben dem Namen.</p>
       <p>Im Archiv stehen die Abschlusstabellen und die Saison-Awards: Dauerbrenner (meiste Spiele), Serienkönig (längste Siegesserie), Torfabrik (meiste Tore), Mauer (meiste Weiße Westen), Riesentöter (meiste Überraschungssiege) und das beste Duo.</p>
       <h3>Korrekturen</h3>
       <p>Zum Eintragen braucht jeder einmal das Liga-Passwort, danach merkt sich das Gerät es. Falsch eingetragen? Direkt nach dem Speichern auf „Rückgängig“ tippen, oder später unter „Spiele“ löschen und neu eintragen, die Elo wird automatisch neu berechnet. Spiele abgeschlossener Saisons bleiben unverändert.</p>
@@ -343,8 +343,8 @@ function recompute(){
   S={seasons,cur:seasons.get(curK),past,all:ms,holder:past[0]?.champ||null,holderSeason:past[0]||null};
 }
 
-function rows(season,crownId,archive){const lead=archive?null:(season.res.table[0]||{}).id;return season.res.table.map((p,i)=>{const ti=titleOf(p.elo,p.games);
-  return `<button class="row${i===0?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${i+1}</span><span class="who"><span class="nm">${nm(p.id)}${p.id===crownId?crownTag():''}${p.id===lead?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]} · ${p.games} Sp. · ${p.wins}–${p.games-p.wins}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
+function rows(season,crownId,archive){const t=season.res.table,top=t.length?t[0].elo:null;return t.map(p=>{const ti=titleOf(p.elo,p.games),rk=1+t.filter(o=>o.elo>p.elo).length;
+  return `<button class="row${rk===1?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${rk}</span><span class="who"><span class="nm">${nm(p.id)}${p.id===crownId?crownTag():''}${!archive&&p.elo===top?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]} · ${p.games} Sp. · ${p.wins}–${p.games-p.wins}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
 
 function matchHTML(m,d,del){const aw=m.ga>m.gb,g=Math.abs(d||0);
   const side=(ids,won,c)=>`<span class="side ${c}${won?' won':''}"><span>${ids.map(nm).join(' & ')}</span><em>${won?'+':'−'}${g} Elo</em></span>`;
