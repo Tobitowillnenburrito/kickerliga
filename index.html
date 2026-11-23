@@ -250,6 +250,8 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
   <section data-view="regeln" hidden>
     <div class="vh"><div><h2>So funktioniert die Liga</h2></div></div>
     <div class="card pad prose">
+      <h3>Am Tisch</h3>
+      <p><b>Seitenwechsel bei 9 Toren:</b> Sobald beide Teams zusammen 9 Tore geschossen haben, zum Beispiel bei 5:4 oder 7:2, werden die Seiten gewechselt. So spielt kein Team die ganze Zeit auf der besseren Tischseite.</p>
       <h3>Elo</h3>
       <p>Jede Saison startet jeder bei <b>1000 Elo</b>. Nach jedem Spiel bekommt der Sieger Punkte, die der Verlierer abgibt. Wie viele, hängt vom Elo-Unterschied ab und davon, wie deutlich das Ergebnis ist: Wer einen Stärkeren schlägt, holt viel, wer als Favorit gewinnt, holt wenig.</p>
       <ul id="ex"></ul>
@@ -262,7 +264,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
       <p>Die Flamme zeigt die laufende Serie und erlischt bei der nächsten Niederlage. Erfolge bleiben die ganze Saison stehen. Beides zählt pro Saison, im Spielerprofil steht zusätzlich die Bilanz über alle Saisons.</p>
       <h3>Saisons und Weltmeister</h3>
       <p>Eine Saison dauert ein TUM-Semester: Wintersemester 1. Oktober bis 31. März, Sommersemester 1. April bis 30. September. Danach startet wieder jeder bei 1000.</p>
-      <p>Die Tabelle ist immer nach Elo sortiert. Wer am Saisonende die höchste Elo und mindestens 10 Spiele hat, wird <b>Weltmeister</b>, auch wenn jemand mit weniger Spielen weiter oben steht. Wer das gerade wäre, trägt in der Tabelle den Hinweis „Auf Titelkurs“. Der Weltmeister trägt die Krone die ganze nächste Saison neben dem Namen. Hat niemand 10 Spiele, zählt einfach die höchste Elo.</p>
+      <p>Die Tabelle ist nach Elo sortiert, und jedes Spiel zählt ab dem ersten. Wer gerade vorne liegt, trägt den Hinweis „Auf Titelkurs“. Wer am Saisonende oben steht, wird <b>Weltmeister</b> und trägt die Krone die ganze nächste Saison neben dem Namen.</p>
       <p>Im Archiv stehen die Abschlusstabellen und die Saison-Awards: Dauerbrenner (meiste Spiele), Serienkönig (längste Siegesserie), Torfabrik (meiste Tore), Mauer (meiste Weiße Westen), Riesentöter (meiste Überraschungssiege) und das beste Duo.</p>
       <h3>Korrekturen</h3>
       <p>Zum Eintragen braucht jeder einmal das Liga-Passwort, danach merkt sich das Gerät es. Falsch eingetragen? Direkt nach dem Speichern auf „Rückgängig“ tippen, oder später unter „Spiele“ löschen und neu eintragen, die Elo wird automatisch neu berechnet. Spiele abgeschlossener Saisons bleiben unverändert.</p>
@@ -276,7 +278,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
 <script>
 const SUPABASE_URL=((window.KICKERLIGA||{}).url||'').trim().replace(/\/+$/,''),SUPABASE_KEY=((window.KICKERLIGA||{}).key||'').trim();
 {
-const K=40,START=1000,MIN_GAMES=10,STREAK=3,HOT=5,MAXFIRE=10,GIANT=.3,DUO_MIN=3,VIEWS=['tabelle','eintragen','spiele','statistik','spieler','archiv','regeln'];
+const K=40,START=1000,STREAK=3,HOT=5,MAXFIRE=10,GIANT=.3,DUO_MIN=3,VIEWS=['tabelle','eintragen','spiele','statistik','spieler','archiv','regeln'];
 const CLOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 8v5l3.5 2.5M9 1.5h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
 const BALL='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5l4.3 3.1-1.6 5h-5.4l-1.6-5z" fill="currentColor"/></svg>';
 const DUO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3.6" fill="currentColor"/><circle cx="16.5" cy="8" r="3.6" fill="currentColor" opacity=".6"/><path d="M1.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6z" fill="currentColor"/><path d="M10.5 20c0-3.6 2.6-6 6-6s6 2.4 6 6z" fill="currentColor" opacity=".6"/></svg>';
@@ -335,15 +337,14 @@ function recompute(){
   for(const [k,list] of by)seasons.set(k,{...seasonInfo(k),matches:list,res:compute(list)});
   if(!seasons.has(curK))seasons.set(curK,{...seasonInfo(curK),matches:[],res:compute([])});
   for(const s of seasons.values()){s.done=s.end.getTime()<=now;
-    if(s.done&&s.matches.length){const t=ranked(s.res.table);s.qualified=t[0].games>=MIN_GAMES;s.champ=t[0].id}}
+    if(s.done&&s.matches.length)s.champ=s.res.table[0].id}
   for(const s of seasons.values())for(const m of s.matches){m.d=s.res.deltas.get(m.id);m.up=s.res.upset.has(m.id)}
   const past=[...seasons.values()].filter(s=>s.done&&s.matches.length).sort((a,b)=>b.key-a.key);
   S={seasons,cur:seasons.get(curK),past,all:ms,holder:past[0]?.champ||null,holderSeason:past[0]||null};
 }
 
-const ranked=t=>[...t.filter(p=>p.games>=MIN_GAMES),...t.filter(p=>p.games<MIN_GAMES)];
-function rows(season,crownId,archive){const t=season.res.table,cand=archive?null:(t.find(p=>p.games>=MIN_GAMES)||{}).id;return t.map((p,i)=>{const ti=titleOf(p.elo,p.games),q=p.games>=MIN_GAMES;
-  return `<button class="row${i===0?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${i+1}</span><span class="who"><span class="nm">${nm(p.id)}${p.id===crownId?crownTag():''}${p.id===cand?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]} · ${p.games} Sp. · ${p.wins}–${p.games-p.wins}${q?'':archive?' · <i>nicht gewertet, unter '+MIN_GAMES+' Spielen</i>':` · <i>noch ${MIN_GAMES-p.games} bis zur Wertung</i>`}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
+function rows(season,crownId,archive){const lead=archive?null:(season.res.table[0]||{}).id;return season.res.table.map((p,i)=>{const ti=titleOf(p.elo,p.games);
+  return `<button class="row${i===0?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${i+1}</span><span class="who"><span class="nm">${nm(p.id)}${p.id===crownId?crownTag():''}${p.id===lead?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]} · ${p.games} Sp. · ${p.wins}–${p.games-p.wins}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
 
 function matchHTML(m,d,del){const aw=m.ga>m.gb,g=Math.abs(d||0);
   const side=(ids,won,c)=>`<span class="side ${c}${won?' won':''}"><span>${ids.map(nm).join(' & ')}</span><em>${won?'+':'−'}${g} Elo</em></span>`;
@@ -357,7 +358,7 @@ function renderHeader(){const c=S.cur,days=Math.max(0,Math.ceil((c.end-Date.now(
   $('#hChamp').innerHTML=S.holder?`${CROWN}Weltmeister: <b>${nm(S.holder)}</b> <span>(${S.holderSeason.label})</span>`:`${CROWN}Der erste Weltmeister wird am ${dShort.format(lastDay(c))} gekürt`}
 
 function renderTable(){const c=S.cur,n=c.matches.length,played=new Set(c.res.table.map(p=>p.id)),rest=players.filter(p=>!played.has(p.id)).sort(byName);
-  $('#tMeta').textContent=`${c.label} · ${n} ${n===1?'Spiel':'Spiele'} · Weltmeister-Wertung ab ${MIN_GAMES} Spielen`;
+  $('#tMeta').textContent=`${c.label} · ${n} ${n===1?'Spiel':'Spiele'}`;
   let h;
   if(!(got.p&&got.m)&&!players.length)h='<p class="empty">Lade die Liga …</p>';
   else if(!players.length)h=`<div class="empty"><b>Noch keine Spieler.</b> Leg unter <a href="#spieler">Spieler</a> alle an, dann kann es losgehen.</div>`;
@@ -381,7 +382,7 @@ function renderArchive(){const el=$('#arch');
   if(!S.past.length){el.innerHTML=`<div class="card empty"><b>Noch keine abgeschlossene Saison.</b> Die Saison ${S.cur.label} endet am ${dShort.format(lastDay(S.cur))}. Danach steht hier ihre Abschlusstabelle und wer Weltmeister wurde.</div>`;return}
   const s=S.past.find(x=>x.key===archSel)||S.past[0],ch=s.res.st.get(s.champ);
   el.innerHTML=`<div class="chips">${S.past.map(x=>`<button class="chip${x.key===s.key?' on':''}" data-act="arch" data-k="${x.key}"><b>${x.label}</b><small>${CROWN}${nm(x.champ)}</small></button>`).join('')}</div>
-  <div class="card champ">${CROWN}<div><span class="lbl">Weltmeister ${s.label}</span><b class="cn">${nm(s.champ)}</b><span class="sub">${ch.elo} Elo · ${ch.games} Spiele · ${ch.wins} Siege${s.qualified?'':` · niemand kam auf ${MIN_GAMES} Spiele, daher zählte die höchste Elo`}</span></div></div>
+  <div class="card champ">${CROWN}<div><span class="lbl">Weltmeister ${s.label}</span><b class="cn">${nm(s.champ)}</b><span class="sub">${ch.elo} Elo · ${ch.games} Spiele · ${ch.wins} Siege</span></div></div>
   ${awardsHTML(s)}
   <div class="card list">${rows(s,s.champ,true)}</div>
   <details class="card"><summary>Alle ${s.matches.length} Spiele dieser Saison</summary><ul class="mlist">${[...s.matches].reverse().map(m=>matchHTML(m,s.res.deltas.get(m.id),false)).join('')}</ul></details>`}
