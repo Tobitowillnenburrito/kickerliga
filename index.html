@@ -348,12 +348,17 @@ function compute(ms){
   return{st,deltas,upset,table:[...st.values()].sort((x,y)=>y.elo-x.elo||y.wins-x.wins||x.games-y.games)};
 }
 
+let snaps=new Map();
+const toSnap=r=>({players:[...r.st.values()].map(p=>({...p,mates:[...p.mates],opp:[...p.opp]})),deltas:Object.fromEntries(r.deltas),upset:[...r.upset]});
+function fromSnap(d){const st=new Map(d.players.map(p=>[p.id,{...p,mates:new Map(p.mates),opp:new Map(p.opp)}]));
+  return{st,deltas:new Map(Object.entries(d.deltas)),upset:new Set(d.upset),table:[...st.values()].sort((x,y)=>y.elo-x.elo||y.wins-x.wins||x.games-y.games)}}
+
 function recompute(){
   const ms=matches.filter(validMatch).map(m=>({...m,mode:m.a.length!==m.b.length?'2v1':m.a.length===2?'2v2':'1v1',t:Date.parse(m.playedAt)}))
     .sort((x,y)=>x.t-y.t||String(x.createdAt).localeCompare(String(y.createdAt))||x.id.localeCompare(y.id));
   const by=new Map(),now=Date.now(),curK=seasonKey(now),seasons=new Map();
   for(const m of ms){const k=seasonKey(m.t);if(!by.has(k))by.set(k,[]);by.get(k).push(m)}
-  for(const [k,list] of by)seasons.set(k,{...seasonInfo(k),matches:list,res:compute(list)});
+  for(const [k,list] of by)seasons.set(k,{...seasonInfo(k),matches:list,res:snaps.has(k)?fromSnap(snaps.get(k).data):compute(list)});
   if(!seasons.has(curK))seasons.set(curK,{...seasonInfo(curK),matches:[],res:compute([])});
   for(const s of seasons.values()){s.done=s.end.getTime()<=now;
     if(s.done&&s.matches.length)s.champ=s.res.table[0].id}
@@ -530,9 +535,15 @@ async function rpc(fn,args){const{error}=await db.rpc(fn,args);if(error){const e
 const api={addPlayer:(pw,id,name)=>rpc('add_player',{p_pw:pw,p_id:id,p_name:name}),renamePlayer:(pw,id,name)=>rpc('rename_player',{p_pw:pw,p_id:id,p_name:name}),deletePlayer:(pw,id)=>rpc('delete_player',{p_pw:pw,p_id:id}),
   addMatch:(pw,m)=>rpc('add_match',{p_pw:pw,p_id:m.id,p_a:m.a,p_b:m.b,p_ga:m.ga,p_gb:m.gb,p_played_at:m.playedAt}),deleteMatch:(pw,id)=>rpc('delete_match',{p_pw:pw,p_id:id})};
 async function fetchAll(table,cols){let out=[],from=0;for(;;){const{data,error}=await db.from(table).select(cols).order('created_at').order('id').range(from,from+999);if(error)throw error;out=out.concat(data);if(data.length<1000)return out;from+=1000}}
-async function reload(){const[p,m]=await Promise.all([fetchAll('players','id,name,created_at'),fetchAll('matches','id,a,b,ga,gb,played_at,created_at')]);
+const frozenTry=new Set();
+async function freezeSeasons(){const pw=getPw();if(!db||!pw)return;
+  for(const s of S.seasons.values()){if(!s.done||!s.matches.length||snaps.has(s.key)||frozenTry.has(s.key))continue;
+    frozenTry.add(s.key);try{await db.rpc('freeze_season',{p_pw:pw,p_key:s.key,p_label:s.label,p_data:toSnap(s.res)})}catch(e){frozenTry.delete(s.key)}}
+  }
+async function reload(){const[p,m,sn]=await Promise.all([fetchAll('players','id,name,created_at'),fetchAll('matches','id,a,b,ga,gb,played_at,created_at'),fetchAll('season_snapshots','season_key,label,data').catch(()=>[])]);
+  snaps=new Map(sn.map(r=>[r.season_key,r]));
   players=p.map(r=>({id:r.id,name:r.name,createdAt:r.created_at})).filter(x=>typeof x.name==='string'&&clean(x.name));
-  matches=m.map(r=>({id:r.id,a:r.a,b:r.b,ga:r.ga,gb:r.gb,playedAt:r.played_at,createdAt:r.created_at}));got.p=got.m=true;render()}
+  matches=m.map(r=>({id:r.id,a:r.a,b:r.b,ga:r.ga,gb:r.gb,playedAt:r.played_at,createdAt:r.created_at}));got.p=got.m=true;render();freezeSeasons()}
 let pwResolve=null;
 function askPw(wrong){closeSheet();return new Promise(res=>{pwResolve=res;
   $('#sheet').innerHTML=`<div class="sh-h"><div><span class="lbl">Einmalig auf diesem Gerät</span><h3>Liga-Passwort</h3></div><button class="x" data-act="close" aria-label="Abbrechen">×</button></div>
