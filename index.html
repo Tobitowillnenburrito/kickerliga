@@ -75,8 +75,8 @@ a.btn{color:#fff}
 .idle{opacity:.75}.grp{margin:0;padding:14px 16px 6px;font:600 14px Barlow,sans-serif;color:var(--mut);border-bottom:1px solid var(--line);background:var(--soft)}
 .empty{padding:22px 18px;margin:0;color:var(--mut)}.empty b{color:var(--ink)}
 .status{margin:0 0 14px;padding:12px 16px;border-radius:12px;background:light-dark(#fff6da,#2b250f);color:var(--ink);border:1px solid light-dark(#efd98a,#5a4c1c)}.status.err{background:light-dark(#fde8ea,#33151a);border-color:light-dark(#f3b3bb,#6a2a33)}
-.seg{display:inline-grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:var(--soft);border:1px solid var(--line);margin-bottom:16px}
-.seg button{min-height:44px;padding:0 18px;border:0;border-radius:9px;background:none;color:var(--mut);font:600 16px Barlow,sans-serif;cursor:pointer}
+.seg{display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:4px;border-radius:12px;background:var(--soft);border:1px solid var(--line);margin-bottom:16px}
+.seg button{min-height:44px;padding:0 14px;white-space:nowrap;border:0;border-radius:9px;background:none;color:var(--mut);font:600 16px Barlow,sans-serif;cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .teams{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center}
 .team{margin:0;padding:14px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px;background:var(--soft)}
@@ -85,7 +85,7 @@ a.btn{color:#fff}
 .vs{font-size:22px;font-weight:800;color:var(--mut)}
 select,input{width:100%;min-height:48px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:500 16px Barlow,sans-serif}
 select:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:1px}
-.p2{display:none}.two .p2{display:block}
+.p2{display:none}#gameF[data-mode="2v2"] .p2,#gameF[data-mode="2v1"] #a2{display:block}.m21{display:none;margin:-6px 0 14px}#gameF[data-mode="2v1"] .m21{display:block}
 .gl{font-size:14px;color:var(--mut);margin-top:4px}
 .step{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:6px}
 .step button{min-height:48px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:600 24px Barlow,sans-serif;cursor:pointer}
@@ -187,8 +187,9 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
 
   <section data-view="eintragen" hidden>
     <div class="vh"><div><h2>Spiel eintragen</h2><p class="meta">Wer hat gespielt, wie ist es ausgegangen?</p></div></div>
-    <form id="gameF" class="card pad" novalidate>
-      <div class="seg" role="group" aria-label="Spielmodus"><button type="button" data-act="mode" data-m="1v1" aria-pressed="true">1 gegen 1</button><button type="button" data-act="mode" data-m="2v2" aria-pressed="false">2 gegen 2</button></div>
+    <form id="gameF" class="card pad" data-mode="1v1" novalidate>
+      <div class="seg" role="group" aria-label="Spielmodus"><button type="button" data-act="mode" data-m="1v1" aria-pressed="true">1 gegen 1</button><button type="button" data-act="mode" data-m="2v2" aria-pressed="false">2 gegen 2</button><button type="button" data-act="mode" data-m="2v1" aria-pressed="false">2 gegen 1</button></div>
+      <p class="hint m21">Blau spielt zu zweit, Rot allein. Das Duo hat bei der Siegchance einen Bonus, der Einzelspieler bekommt die vollen Punkte, im Duo jeder die Hälfte.</p>
       <div class="teams">
         <fieldset class="team blue"><legend>Team Blau</legend>
           <select id="a1" aria-label="Blau, Spieler 1"></select><select id="a2" class="p2" aria-label="Blau, Spieler 2"></select>
@@ -256,6 +257,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
       <p>Jede Saison startet jeder bei <b>1000 Elo</b>. Nach jedem Spiel bekommt der Sieger Punkte, die der Verlierer abgibt. Wie viele, hängt vom Elo-Unterschied ab und davon, wie deutlich das Ergebnis ist: Wer einen Stärkeren schlägt, holt viel, wer als Favorit gewinnt, holt wenig.</p>
       <ul id="ex"></ul>
       <p>Die Formel: Siegchance = 1 / (1 + 10<sup>(G − E) / 400</sup>) mit G = Elo des Gegners und E = eigene Elo. Punkte = 40 × (Ergebnis − Siegchance) × Torfaktor, Ergebnis ist 1 bei Sieg und 0 bei Niederlage. Der Torfaktor belohnt deutliche Siege: Torfaktor = 0,75 + (Tordifferenz − 2) ÷ 16, also 0,75 bei 2 Toren Abstand oder weniger und höchstens 1,25 ab 10 Toren Abstand. Im 2 gegen 2 zählt der Durchschnitt beider Spieler, und beide bekommen dieselbe Änderung.</p>
+      <p><b>2 gegen 1:</b> Zu zweit hat man einen Vorteil. Deshalb zählt das Duo bei der Siegchance mit seinem Durchschnitt plus 50 Elo. Der Einzelspieler bekommt oder verliert die vollen Punkte, im Duo jeder die Hälfte. <span id="ex21"></span></p>
       <h3>Titel</h3>
       <ul class="titles" id="titles"></ul>
       <p>Titel richten sich nach der aktuellen Elo. Wer abrutscht, verliert ihn wieder.</p>
@@ -297,6 +299,10 @@ const sg=n=>n>0?'+'+n:n<0?'−'+(-n):'±0',pad=n=>String(n).padStart(2,'0');
 const expect=(ra,rb)=>1/(1+10**((rb-ra)/400)),avg=a=>a.reduce((s,x)=>s+x,0)/a.length;
 const MF_MIN=.75,MF_MAX=1.25,mf=(ga,gb)=>Math.min(MF_MAX,Math.max(MF_MIN,MF_MIN+(Math.abs(ga-gb)-2)/16));
 const gain=(ra,rb,f=1)=>Math.max(1,Math.round(K*f*(1-expect(ra,rb))));
+const BONUS21=50,teamR=(rs,n,m)=>avg(rs)+(n>m?BONUS21:0);
+function pts(ra,rb,nA,nB,aWin,f){const ea=expect(ra,rb),raw=K*f*(aWin?1-ea:ea);
+  if(nA===nB){const g=Math.max(1,Math.round(raw));return aWin?[g,-g]:[-g,g]}
+  const h=Math.max(1,Math.round(raw/2)),ca=nA>nB?h:2*h,cb=nB>nA?h:2*h;return aWin?[ca,-cb]:[-ca,cb]}
 const range=(ra,rb)=>`+${gain(ra,rb,MF_MIN)} bis +${gain(ra,rb,MF_MAX)}`;
 const titleOf=(elo,games)=>games?TITLES.find(t=>elo>=t[0]):null;
 const byName=(x,y)=>x.name.localeCompare(y.name,'de');
@@ -313,24 +319,24 @@ let editing=null,confirmDel=null,archSel=null,mode='1v1',busy=false,whenTouched=
 const nm=id=>esc(names.get(id)||'Unbekannt');
 
 function validMatch(m){if(!m||!Array.isArray(m.a)||!Array.isArray(m.b))return false;const all=[...m.a,...m.b];
-  return m.a.length===m.b.length&&(m.a.length===1||m.a.length===2)&&all.every(x=>typeof x==='string')&&new Set(all).size===all.length&&Number.isInteger(m.ga)&&Number.isInteger(m.gb)&&m.ga!==m.gb&&!isNaN(Date.parse(m.playedAt))}
+  return (m.a.length===1||m.a.length===2)&&(m.b.length===1||m.b.length===2)&&all.every(x=>typeof x==='string')&&new Set(all).size===all.length&&Number.isInteger(m.ga)&&Number.isInteger(m.gb)&&m.ga!==m.gb&&!isNaN(Date.parse(m.playedAt))}
 
 function compute(ms){
   const st=new Map(),deltas=new Map(),upset=new Set();
-  const P=id=>{let p=st.get(id);if(!p)st.set(id,p={id,elo:START,peak:START,games:0,wins:0,gf:0,ga:0,form:[],hist:[START],rec:{'1v1':[0,0],'2v2':[0,0]},mates:new Map(),opp:new Map(),last:0,cur:0,best:0,shut:0,giant:0});return p};
+  const P=id=>{let p=st.get(id);if(!p)st.set(id,p={id,elo:START,peak:START,games:0,wins:0,gf:0,ga:0,form:[],hist:[START],rec:{'1v1':[0,0],'2v2':[0,0],'2v1':[0,0]},mates:new Map(),opp:new Map(),last:0,cur:0,best:0,shut:0,giant:0});return p};
   for(const m of ms){
-    const A=m.a.map(P),B=m.b.map(P),ra=avg(A.map(p=>p.elo)),rb=avg(B.map(p=>p.elo)),ea=expect(ra,rb),aw=m.ga>m.gb,f=mf(m.ga,m.gb),d=aw?gain(ra,rb,f):-gain(rb,ra,f);
-    deltas.set(m.id,d);if((aw?ea:1-ea)<GIANT)upset.add(m.id);
+    const A=m.a.map(P),B=m.b.map(P),ra=teamR(A.map(p=>p.elo),A.length,B.length),rb=teamR(B.map(p=>p.elo),B.length,A.length),ea=expect(ra,rb),aw=m.ga>m.gb,f=mf(m.ga,m.gb),[da,db]=pts(ra,rb,A.length,B.length,aw,f);
+    deltas.set(m.id,{a:da,b:db});if((aw?ea:1-ea)<GIANT)upset.add(m.id);
     const upd=(T,ch,won,f,a,ex,O)=>T.forEach((p,i)=>{for(const o of O){const r=p.opp.get(o)||{w:0,l:0};if(won)r.w++;else r.l++;p.opp.set(o,r)}p.elo+=ch;p.peak=Math.max(p.peak,p.elo);p.games++;p.wins+=won;p.gf+=f;p.ga+=a;p.form.push(won);p.hist.push(p.elo);p.last=ch;p.rec[m.mode][won?0:1]++;
       if(won){p.cur++;p.best=Math.max(p.best,p.cur);if(a===0)p.shut++;if(ex<GIANT)p.giant++}else p.cur=0;
       if(T.length>1){const o=T[1-i].id,x=p.mates.get(o)||{g:0,w:0};x.g++;x.w+=won;p.mates.set(o,x)}});
-    upd(A,d,aw?1:0,m.ga,m.gb,ea,m.b);upd(B,-d,aw?0:1,m.gb,m.ga,1-ea,m.a);
+    upd(A,da,aw?1:0,m.ga,m.gb,ea,m.b);upd(B,db,aw?0:1,m.gb,m.ga,1-ea,m.a);
   }
   return{st,deltas,upset,table:[...st.values()].sort((x,y)=>y.elo-x.elo||y.wins-x.wins||x.games-y.games)};
 }
 
 function recompute(){
-  const ms=matches.filter(validMatch).map(m=>({...m,mode:m.a.length===2?'2v2':'1v1',t:Date.parse(m.playedAt)}))
+  const ms=matches.filter(validMatch).map(m=>({...m,mode:m.a.length!==m.b.length?'2v1':m.a.length===2?'2v2':'1v1',t:Date.parse(m.playedAt)}))
     .sort((x,y)=>x.t-y.t||String(x.createdAt).localeCompare(String(y.createdAt))||x.id.localeCompare(y.id));
   const by=new Map(),now=Date.now(),curK=seasonKey(now),seasons=new Map();
   for(const m of ms){const k=seasonKey(m.t);if(!by.has(k))by.set(k,[]);by.get(k).push(m)}
@@ -346,11 +352,11 @@ function recompute(){
 function rows(season,crownId,archive){const t=season.res.table,top=t.length?t[0].elo:null;return t.map(p=>{const ti=titleOf(p.elo,p.games),rk=1+t.filter(o=>o.elo>p.elo).length;
   return `<button class="row${rk===1?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${rk}</span><span class="who"><span class="nm">${nm(p.id)}${p.id===crownId?crownTag():''}${!archive&&p.elo===top?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]} · ${p.games} Sp. · ${p.wins}–${p.games-p.wins}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
 
-function matchHTML(m,d,del){const aw=m.ga>m.gb,g=Math.abs(d||0);
-  const side=(ids,won,c)=>`<span class="side ${c}${won?' won':''}"><span>${ids.map(nm).join(' & ')}</span><em>${won?'+':'−'}${g} Elo</em></span>`;
+function matchHTML(m,d,del){const aw=m.ga>m.gb;d=d||{a:0,b:0};
+  const side=(ids,won,c,v)=>`<span class="side ${c}${won?' won':''}"><span>${ids.map(nm).join(' & ')}</span><em>${v>0?'+':'−'}${Math.abs(v)} Elo${ids.length>1&&m.a.length!==m.b.length?' je':''}</em></span>`;
   const ctl=!del?'':confirmDel===m.id?`<div class="cf">Spiel löschen? Die Elo danach wird neu berechnet. <button class="btn sm danger" data-act="del" data-id="${esc(m.id)}">Löschen</button><button class="btn sm ghost" data-act="nodel">Abbrechen</button></div>`:`<button class="lnk wonly" data-act="askdel" data-id="${esc(m.id)}">Löschen</button>`;
   const tags=((aw?m.gb:m.ga)===0?` · <span class="ach ic-sh">${SHIELD}Weiße Weste</span>`:'')+(m.up?` · <span class="ach ic-bt">${BOLT}Überraschung</span>`:'');
-  return `<li class="match"><div class="mt">${dLong.format(m.t)} · ${m.mode==='2v2'?'2 gegen 2':'1 gegen 1'}${tags}</div><div class="ml">${side(m.a,aw,'blue')}<b class="score num">${m.ga}:${m.gb}</b>${side(m.b,!aw,'red')}</div>${ctl}</li>`}
+  return `<li class="match"><div class="mt">${dLong.format(m.t)} · ${m.a.length} gegen ${m.b.length}${tags}</div><div class="ml">${side(m.a,aw,'blue',d.a)}<b class="score num">${m.ga}:${m.gb}</b>${side(m.b,!aw,'red',d.b)}</div>${ctl}</li>`}
 
 function renderHeader(){const c=S.cur,days=Math.max(0,Math.ceil((c.end-Date.now())/864e5));
   $('#hSeason').textContent=`Saison ${c.label}`;
@@ -393,7 +399,7 @@ function syncGroup(ids,act,list,ph){const seen=new Set();
   for(const id of ids){const s=$('#'+id),v=s.value,on=act.includes(id),o=list.filter(p=>!on||p.id===v||!seen.has(p.id)),
     h=`<option value="">${ph}</option>`+o.map(p=>`<option value="${esc(p.id)}">${esc(p.label)}</option>`).join('');
     if(oc[id]!==h){s.innerHTML=h;oc[id]=h}s.value=o.some(p=>p.id===v)?v:''}}
-function syncOpts(){syncGroup(['a1','a2','b1','b2'],mode==='2v2'?['a1','a2','b1','b2']:['a1','b1'],fp,players.length?'Spieler wählen':'Erst Spieler anlegen');syncGroup(['ha','hb'],['ha','hb'],hp,'Spieler wählen')}
+function syncOpts(){syncGroup(['a1','a2','b1','b2'],mode==='2v2'?['a1','a2','b1','b2']:mode==='2v1'?['a1','a2','b1']:['a1','b1'],fp,players.length?'Spieler wählen':'Erst Spieler anlegen');syncGroup(['ha','hb'],['ha','hb'],hp,'Spieler wählen')}
 function fillSelects(){const st=S.cur.res.st,ps=[...players].sort(byName),sig=ps.map(p=>p.id+p.name+(st.get(p.id)?.elo??START)).join('|');
   if(sig!==selSig){selSig=sig;fp=ps.map(p=>({id:p.id,label:`${p.name} · ${st.get(p.id)?.elo??START}`}));hp=ps.map(p=>({id:p.id,label:p.name}))}
   syncOpts();
@@ -415,7 +421,7 @@ function renderH2H(){const a=$('#ha').value,b=$('#hb').value,el=$('#h2h');
   el.innerHTML=`<div class="duel"><div class="dn bt">${nm(a)}</div><div class="dsc num">${r.w[0]}<span>:</span>${r.w[1]}</div><div class="dn rt">${nm(b)}</div></div>
   <div class="pbar${tot?'':' none'}"><span class="pb" style="width:${tot?(r.w[0]/tot*100).toFixed(1):50}%"></span></div>
   <p class="hint center">${lead}</p>
-  <div class="kpis k3"><div><b class="num">${r.one[0]}:${r.one[1]}</b><span>1 gegen 1${r.one[0]+r.one[1]?` · Tore ${r.gl[0]}:${r.gl[1]}`:''}</span></div><div><b class="num">${r.two[0]}:${r.two[1]}</b><span>2 gegen 2 als Gegner</span></div><div><b class="num">${r.team.w}/${r.team.g}</b><span>Siege zusammen im Team</span></div></div>
+  <div class="kpis k3"><div><b class="num">${r.one[0]}:${r.one[1]}</b><span>1 gegen 1${r.one[0]+r.one[1]?` · Tore ${r.gl[0]}:${r.gl[1]}`:''}</span></div><div><b class="num">${r.two[0]}:${r.two[1]}</b><span>2 gegen 2 und 2 gegen 1 als Gegner</span></div><div><b class="num">${r.team.w}/${r.team.g}</b><span>Siege zusammen im Team</span></div></div>
   <p class="hint">Aktuelle Elo: ${nm(a)} <b>${el2(a)}</b> · ${nm(b)} <b>${el2(b)}</b>. Siegchance im nächsten 1 gegen 1: <b>${pa} %</b> zu <b>${100-pa} %</b>, ein Sieg bringt je nach Ergebnis ${range(el2(a),el2(b))} beziehungsweise ${range(el2(b),el2(a))} Elo.</p>
   ${tot?`<h3 class="subh">Duelle, neueste zuerst</h3><ul class="mlist">${[...r.duels].reverse().map(m=>matchHTML(m,m.d,false)).join('')}</ul>`:''}`}
 
@@ -440,7 +446,7 @@ function awardsHTML(s){const t=[...s.res.st.values()],top=(f,min=1)=>{const mx=M
 
 const chartRO=new ResizeObserver(()=>drawChart());
 function chartData(){const c=S.cur,ms=c.matches,ids=c.res.table.map(p=>p.id),r=new Map(ids.map(id=>[id,START])),ser=new Map(ids.map(id=>[id,[START]]));
-  for(const m of ms){for(const id of m.a)r.set(id,r.get(id)+m.d);for(const id of m.b)r.set(id,r.get(id)-m.d);for(const id of ids)ser.get(id).push(r.get(id))}
+  for(const m of ms){for(const id of m.a)r.set(id,r.get(id)+m.d.a);for(const id of m.b)r.set(id,r.get(id)+m.d.b);for(const id of ids)ser.get(id).push(r.get(id))}
   return{ms,ids,ser}}
 function drawChart(){const svg=$('#chart'),fig=$('#cfig'),leg=$('#cleg'),D=chartData();S.chart=D;
   chartSel=chartSel.filter(x=>D.ids.includes(x.id));
@@ -470,16 +476,18 @@ function chartHover(e){const c=S.cx,D=S.chart;if(!c||!D||!D.ms.length)return;con
   tip.hidden=false;const left=c.x(i)+12,w=tip.offsetWidth;tip.style.left=(left+w>c.W?Math.max(0,c.x(i)-12-w):left)+'px'}
 function chartLeave(){const xh=$('#xh');if(xh)xh.setAttribute('visibility','hidden');$('#ctip').hidden=true}
 
-function formVals(){const two=mode==='2v2',a=[$('#a1').value].concat(two?[$('#a2').value]:[]),b=[$('#b1').value].concat(two?[$('#b2').value]:[]);
+function formVals(){const twoA=mode!=='1v1',twoB=mode==='2v2',a=[$('#a1').value].concat(twoA?[$('#a2').value]:[]),b=[$('#b1').value].concat(twoB?[$('#b2').value]:[]);
   return{a,b,ga:Number($('#ga').value),gb:Number($('#gb').value),when:$('#when').value}}
 
 function renderPred(){const{a,b}=formVals(),all=[...a,...b],el=$('#pred');
   if(all.some(x=>!x)||new Set(all).size<all.length){el.innerHTML='<p class="hint" style="margin:0">Wähle alle Spieler, dann siehst du hier die Siegchancen und wie viel Elo es zu holen gibt.</p>';return}
-  const r=id=>S.cur.res.st.get(id)?.elo??START,ra=avg(a.map(r)),rb=avg(b.map(r)),ea=expect(ra,rb),pa=Math.round(ea*100);
-  el.innerHTML=`<div class="pbar"><span class="pb" style="width:${(ea*100).toFixed(1)}%"></span></div><div class="prow"><span class="bt">Blau <b class="num">${pa} %</b> · Ø ${Math.round(ra)}</span><span class="rt">Ø ${Math.round(rb)} · <b class="num">${100-pa} %</b> Rot</span></div><p class="hint">Gewinnt Blau: <b>${range(ra,rb)} Elo</b> · Gewinnt Rot: <b>${range(rb,ra)} Elo</b><br>Je deutlicher der Sieg, desto mehr: knapp (2 Tore Abstand) gibt am wenigsten, 10:0 am meisten.</p>`}
+  const r=id=>S.cur.res.st.get(id)?.elo??START,ra=teamR(a.map(r),a.length,b.length),rb=teamR(b.map(r),b.length,a.length),ea=expect(ra,rb),pa=Math.round(ea*100),uneven=a.length!==b.length,
+    rg=w=>{const i=w?0:1,lo=pts(ra,rb,a.length,b.length,w,MF_MIN)[i],hi=pts(ra,rb,a.length,b.length,w,MF_MAX)[i];return `+${lo} bis +${hi}`};
+  el.innerHTML=`<div class="pbar"><span class="pb" style="width:${(ea*100).toFixed(1)}%"></span></div><div class="prow"><span class="bt">Blau <b class="num">${pa} %</b> · Ø ${Math.round(avg(a.map(r)))}${uneven?' +50 Bonus':''}</span><span class="rt">Ø ${Math.round(avg(b.map(r)))} · <b class="num">${100-pa} %</b> Rot</span></div><p class="hint">Gewinnt Blau: <b>${uneven?'je ':''}${rg(true)} Elo</b> · Gewinnt Rot: <b>${rg(false)} Elo</b><br>Je deutlicher der Sieg, desto mehr: knapp (2 Tore Abstand) gibt am wenigsten, 10:0 am meisten.</p>`}
 
 function renderRules(){
-  const eq=(a,b)=>gain(1000,1000,mf(a,b));
+  const eq=(a,b)=>gain(1000,1000,mf(a,b)),w21=pts(1050,1000,2,1,true,mf(10,4)),l21=pts(1050,1000,2,1,false,mf(10,4));
+  $('#ex21').textContent=`Beispiel mit drei gleich Starken und 10:4: Gewinnt das Duo, bekommt jeder im Duo ${sg(w21[0])} und der Einzelspieler ${sg(w21[1])}. Gewinnt der Einzelspieler, bekommt er ${sg(l21[1])} und jeder im Duo ${sg(l21[0])}.`;
   $('#ex').innerHTML=`<li>Gleich stark (1000 gegen 1000): knapper Sieg wie 10:8 oder 12:10 <b>+${eq(10,8)}</b>, 10:4 <b>+${eq(10,4)}</b>, 10:0 <b>+${eq(10,0)}</b>. Der Verlierer verliert jeweils genauso viel.</li><li>Favorit (1200) schlägt Außenseiter (1000) 10:5: nur <b>+${gain(1200,1000,mf(10,5))}</b></li><li>Außenseiter (1000) schlägt Favorit (1200) 10:5: <b>+${gain(1000,1200,mf(10,5))}</b></li>`;
   $('#titles').innerHTML=TITLES.map((t,i)=>`<li><span>${t[1]?`<b class="badge">${t[1]}</b>`:''}</span><span>${t[2]}</span><span class="num">${i===TITLES.length-1?`unter ${TITLES[i-1][0]}`:`ab ${t[0]}`}</span></li>`).join('')+`<li><span>${CROWN}</span><span>Weltmeister: Sieger der Vorsaison, eine Saison lang</span><span class="num">Krone</span></li>`;
   $('#achl').innerHTML=[[fire(STREAK),'Heiß: laufende Serie, die Zahl zeigt die Siege am Stück',`ab ${STREAK} Siegen`],[fire(HOT),'Glühend: die Flamme wird blau',`ab ${HOT} Siegen`],[fire(MAXFIRE),'Unaufhaltbar: die Flamme wird violett',`ab ${MAXFIRE} Siegen`],
@@ -544,13 +552,13 @@ async function saveGame(){if(busy)return;if(!whenTouched)setNow();const v=valida
   const dup=S.cur.matches.find(m=>Math.abs(m.t-v.t.getTime())<20*6e4&&((sameSet(m.a,v.a)&&sameSet(m.b,v.b)&&m.ga===v.ga&&m.gb===v.gb)||(sameSet(m.a,v.b)&&sameSet(m.b,v.a)&&m.ga===v.gb&&m.gb===v.ga)));
   if(dup&&!dupOk){fm.innerHTML=`Genau dieses Spiel wurde um ${dTime.format(dup.t)} schon eingetragen. <button type="button" class="btn sm ghost" data-act="dupok">Trotzdem speichern</button>`;return}dupOk=false;
   busy=true;$('#save').disabled=true;
-  const st=S.cur.res.st,r=id=>st.get(id)?.elo??START,ra=avg(v.a.map(r)),rb=avg(v.b.map(r)),aw=v.ga>v.gb,f=mf(v.ga,v.gb),g=aw?gain(ra,rb,f):gain(rb,ra,f);
+  const st=S.cur.res.st,r=id=>st.get(id)?.elo??START,ra=teamR(v.a.map(r),v.a.length,v.b.length),rb=teamR(v.b.map(r),v.b.length,v.a.length),aw=v.ga>v.gb,f=mf(v.ga,v.gb),pp=pts(ra,rb,v.a.length,v.b.length,aw,f),g=Math.abs(aw?pp[0]:pp[1]),je=(aw?v.a:v.b).length>(aw?v.b:v.a).length?'je ':'';
   const data={id:newId(),a:v.a,b:v.b,ga:v.ga,gb:v.gb,playedAt:v.t.toISOString()};
   const ex=[],latest=S.cur.matches.length?S.cur.matches[S.cur.matches.length-1].t:0;
   if(v.t.getTime()>=latest){if((aw?v.gb:v.ga)===0)ex.push('Weiße Weste');if((aw?expect(ra,rb):expect(rb,ra))<GIANT)ex.push('Riesentöter');
     for(const id of aw?v.a:v.b){const n=(st.get(id)?.cur||0)+1;if(n>=STREAK)ex.push(`${names.get(id)||'?'} ist ${fireTier(n)[1].toLowerCase()}: ${n} Siege in Folge`)}}
   const ok=await write(pw=>api.addMatch(pw,data),null);
-  if(ok){lastSaved=data.id;toast(`Gespeichert: ${aw?'Blau':'Rot'} gewinnt ${v.ga}:${v.gb} und holt +${g} Elo${ex.length?' · '+ex.join(' · '):''}`,false,9000,true)}
+  if(ok){lastSaved=data.id;toast(`Gespeichert: ${aw?'Blau':'Rot'} gewinnt ${v.ga}:${v.gb} und holt ${je}+${g} Elo${ex.length?' · '+ex.join(' · '):''}`,false,9000,true)}
   busy=false;$('#save').disabled=readOnly;
   if(ok){$('#ga').value=0;$('#gb').value=0;whenTouched=false;setNow();renderPred()}}
 
@@ -569,7 +577,7 @@ function openSheet(k,pid){const s=S.seasons.get(+k),p=s&&s.res.st.get(pid),ti=p&
     const pts=hs.map((v,i)=>`${(i/(hs.length-1)*300).toFixed(1)},${y(v)}`).join(' ');
     h+=`<div class="kpis"><div><b class="num">${p.elo}</b><span>Elo jetzt</span></div><div><b class="num">${p.peak}</b><span>Bestwert</span></div><div><b class="num">${p.wins}–${p.games-p.wins}</b><span>Siege–Niederlagen</span></div><div><b class="num">${Math.round(p.wins/p.games*100)} %</b><span>Siegquote</span></div></div>
     <div class="curve"><svg viewBox="0 0 300 100" preserveAspectRatio="none" role="img" aria-label="Elo-Verlauf über ${p.games} Spiele"><line x1="0" x2="300" y1="${y(START)}" y2="${y(START)}"/><polyline points="${pts}"/></svg><div class="cl num"><span>${mx}</span><span>${mn}</span></div></div>
-    <ul class="facts"><li>1 gegen 1: <b>${p.rec['1v1'][0]}–${p.rec['1v1'][1]}</b> · 2 gegen 2: <b>${p.rec['2v2'][0]}–${p.rec['2v2'][1]}</b></li><li>Tore: <b>${p.gf}:${p.ga}</b></li>${mate?`<li>Bester Partner: <b>${nm(mate[0])}</b> (${mate[1].w} von ${mate[1].g} gewonnen)</li>`:''}<li>Lieblingsgegner: ${fav?`<b>${nm(fav[0])}</b> (${fav[1].w}:${fav[1].l})`:'noch keiner'}</li><li>Angstgegner: ${nem?`<b>${nm(nem[0])}</b> (${nem[1].w}:${nem[1].l})`:'noch keiner'}</li></ul>
+    <ul class="facts"><li>1 gegen 1: <b>${p.rec['1v1'][0]}–${p.rec['1v1'][1]}</b> · 2 gegen 2: <b>${p.rec['2v2'][0]}–${p.rec['2v2'][1]}</b>${p.rec['2v1'][0]+p.rec['2v1'][1]?` · 2 gegen 1: <b>${p.rec['2v1'][0]}–${p.rec['2v1'][1]}</b>`:''}</li><li>Tore: <b>${p.gf}:${p.ga}</b></li>${mate?`<li>Bester Partner: <b>${nm(mate[0])}</b> (${mate[1].w} von ${mate[1].g} gewonnen)</li>`:''}<li>Lieblingsgegner: ${fav?`<b>${nm(fav[0])}</b> (${fav[1].w}:${fav[1].l})`:'noch keiner'}</li><li>Angstgegner: ${nem?`<b>${nm(nem[0])}</b> (${nem[1].w}:${nem[1].l})`:'noch keiner'}</li></ul>
     <h3 class="subh">Serie und Erfolge</h3>
     <ul class="achlist"><li class="${p.cur>=STREAK?'':'off'}"><span>${p.cur>=STREAK?fire(p.cur):`<span class="fire">${FLAME}</span>`}</span><span>${p.cur>=STREAK?`${fireTier(p.cur)[1]}: ${p.cur} Siege in Folge`:p.cur?`${p.cur} ${p.cur===1?'Sieg':'Siege'} in Folge, ab ${STREAK} brennt die Flamme`:'Gerade keine Siegesserie'}${s.done?' (zum Saisonende)':''}</span><span></span></li>
     <li class="${p.shut?'':'off'}"><span class="ach ic-sh">${SHIELD}</span><span>Weiße Weste</span><span class="num">${p.shut}×</span></li>
@@ -587,7 +595,7 @@ document.addEventListener('click',async e=>{
   if(r&&!b){openSheet(r.dataset.season,r.dataset.pid);return}
   if(!b)return;const a=b.dataset.act,id=b.dataset.id;
   if(a==='mode'||a==='scope'||a==='dscope')b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
-  if(a==='mode'){mode=b.dataset.m;if(mode==='2v2'){const one=[$('#a1').value,$('#b1').value];for(const x of ['a2','b2'])if(one.includes($('#'+x).value))$('#'+x).value=''}$('#gameF').classList.toggle('two',mode==='2v2');syncOpts();renderPred()}
+  if(a==='mode'){mode=b.dataset.m;if(mode!=='1v1'){const one=[$('#a1').value,$('#b1').value];for(const x of (mode==='2v2'?['a2','b2']:['a2']))if(one.includes($('#'+x).value))$('#'+x).value=''}$('#gameF').dataset.mode=mode;syncOpts();renderPred()}
   else if(a==='scope'){h2hScope=b.dataset.s;renderH2H()}
   else if(a==='dscope'){duoScope=b.dataset.s;renderDuos()}
   else if(a==='csel'){const i=chartSel.findIndex(x=>x.id===id);if(i>=0)chartSel.splice(i,1);else{if(chartSel.length>=3)chartSel.shift();const used=chartSel.map(x=>x.slot);chartSel.push({id,slot:[0,1,2].find(k=>!used.includes(k))})}drawChart()}
