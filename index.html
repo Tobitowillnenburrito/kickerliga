@@ -60,12 +60,23 @@ a.btn{color:#fff}
 .badge{display:inline-block;margin-right:5px;padding:2px 5px 1px;border:1.5px solid var(--gold);border-radius:4px;color:var(--gold);font:700 13px/1.1 "Barlow Condensed",sans-serif}
 .tk{display:inline-flex;align-items:center;gap:4px;padding:0 8px 0 6px;border:1.5px solid var(--gold);border-radius:99px;color:var(--gold);font:700 13px/1.5 Barlow,sans-serif}.tk .crown{width:14px}
 .wm{display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:99px;background:light-dark(#fbf1d0,#3a3010);color:var(--gold);font:700 13px/1.6 Barlow,sans-serif}
-.form{display:flex;gap:4px;margin-top:3px;align-items:center;flex-wrap:wrap}.dot{width:9px;height:9px;border-radius:50%;background:var(--loss)}.dot.w{background:var(--win)}
-.fire{display:inline-flex;align-items:center;gap:1px;font:800 16px/1 "Barlow Condensed",sans-serif;color:light-dark(#d9480f,#ff8a3d)}
-.fire svg{width:18px;height:18px}.fire .o{fill:#ff6b1a}.fire .i{fill:#ffd23f}
+.form{display:flex;gap:4px;row-gap:6px;margin-top:5px;align-items:center;flex-wrap:wrap}.dot{width:9px;height:9px;border-radius:50%;background:var(--loss)}.dot.w{background:var(--win)}
+.fire{display:inline-flex;align-items:center;gap:1px;font:800 19px/1 "Barlow Condensed",sans-serif;color:light-dark(#d9480f,#ff8a3d)}
+.fire svg{width:22px;height:22px}.fire .o{fill:#ff6b1a}.fire .i{fill:#ffd23f}
 .fire.t2{color:light-dark(#1d5fe0,#7fb0ff)}.fire.t2 .o{fill:#2f7bff}.fire.t2 .i{fill:#cfe8ff}
 .fire.t3{color:light-dark(#7a2ee6,#c9a2ff)}.fire.t3 .o{fill:#8b3dff}.fire.t3 .i{fill:#f6e3ff}
-.achs{display:inline-flex;gap:9px;margin-left:8px;flex-wrap:wrap}
+.achs{display:inline-flex;gap:6px;margin-left:8px;flex-wrap:wrap}
+.tl{display:inline-flex;align-items:center;gap:5px;padding:2px 10px 2px 8px;border-radius:99px;border:1.5px solid transparent;font:700 14px/1.5 Barlow,sans-serif;white-space:nowrap}
+.tl b{font:800 15px/1 "Barlow Condensed",sans-serif}
+.t-gm{background:light-dark(#a87800,#e9bd45);color:light-dark(#fff,#1d1500)}
+.t-im{background:light-dark(#fbf0cc,#3a2f0d);border-color:var(--gold);color:light-dark(#7a5600,#f0c84d)}
+.t-fm{background:light-dark(#eef1f5,#222b34);border-color:light-dark(#8c98a6,#8b97a5);color:light-dark(#3d4852,#d5dde6)}
+.t-ss{background:light-dark(#eaf1ff,#14223c);border-color:light-dark(#5d8ee8,#7ea6ff);color:light-dark(#1c4fb8,#a9c4ff)}
+.ac{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 5px;border-radius:99px;font:700 13px/1.5 Barlow,sans-serif;white-space:nowrap}
+.ac svg{width:19px;height:19px;flex:none}
+.c-sh{background:light-dark(#e1f4f1,#0e2b27);color:light-dark(#0b5f58,#5eead4)}.c-sh svg{color:light-dark(#0f766e,#2dd4bf)}
+.c-md{background:light-dark(#fbf1d0,#33290c);color:light-dark(#6f4f00,#f0c84d)}.c-md svg{color:var(--gold)}
+.c-bt{background:light-dark(#efe8ff,#251a3d);color:light-dark(#5b21b6,#c4b5fd)}.c-bt svg{color:light-dark(#7c3aed,#c4b5fd)}
 .ach{display:inline-flex;align-items:center;gap:2px;font:700 14px/1 "Barlow Condensed",sans-serif;color:var(--mut);white-space:nowrap}
 .ach svg{width:16px;height:16px;flex:none}
 .ic-sh svg{color:light-dark(#0f766e,#2dd4bf)}.ic-md svg{color:var(--gold)}.ic-bt svg{color:light-dark(#7c3aed,#c4b5fd)}
@@ -256,7 +267,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
       <h3>Elo</h3>
       <p>Jede Saison startet jeder bei <b>1000 Elo</b>. Nach jedem Spiel bekommt der Sieger Punkte, die der Verlierer abgibt. Wie viele, hängt vom Elo-Unterschied ab und davon, wie deutlich das Ergebnis ist: Wer einen Stärkeren schlägt, holt viel, wer als Favorit gewinnt, holt wenig.</p>
       <ul id="ex"></ul>
-      <p>Die Formel: Siegchance = 1 / (1 + 10<sup>(G − E) / 400</sup>) mit G = Elo des Gegners und E = eigene Elo. Punkte = 40 × (Ergebnis − Siegchance) × Torfaktor, Ergebnis ist 1 bei Sieg und 0 bei Niederlage. Der Torfaktor belohnt deutliche Siege: Torfaktor = 0,75 + (Tordifferenz − 2) ÷ 16, also 0,75 bei 2 Toren Abstand oder weniger und höchstens 1,25 ab 10 Toren Abstand. Im 2 gegen 2 zählt der Durchschnitt beider Spieler, und beide bekommen dieselbe Änderung.</p>
+      <p>Die Formel: Siegchance = 1 / (1 + 10<sup>(G − E) / 400</sup>) mit G = Elo des Gegners und E = eigene Elo. Punkte = 32 × (Ergebnis − Siegchance) × Torfaktor, Ergebnis ist 1 bei Sieg und 0 bei Niederlage. Der Torfaktor belohnt deutliche Siege: Torfaktor = 0,75 + (Tordifferenz − 2) ÷ 16, also 0,75 bei 2 Toren Abstand oder weniger und höchstens 1,25 ab 10 Toren Abstand. Im 2 gegen 2 zählt der Durchschnitt beider Spieler, und beide bekommen dieselbe Änderung.</p>
       <p><b>2 gegen 1:</b> Zu zweit hat man einen Vorteil. Deshalb zählt das Duo bei der Siegchance mit seinem Durchschnitt plus 50 Elo. Der Einzelspieler bekommt oder verliert die vollen Punkte, im Duo jeder die Hälfte. <span id="ex21"></span></p>
       <h3>Titel</h3>
       <ul class="titles" id="titles"></ul>
@@ -280,7 +291,7 @@ details.card{margin-top:14px}details summary{min-height:50px;display:flex;align-
 <script>
 const SUPABASE_URL=((window.KICKERLIGA||{}).url||'').trim().replace(/\/+$/,''),SUPABASE_KEY=((window.KICKERLIGA||{}).key||'').trim();
 {
-const K=40,START=1000,STREAK=3,HOT=5,MAXFIRE=10,GIANT=.3,DUO_MIN=3,VIEWS=['tabelle','eintragen','spiele','statistik','spieler','archiv','regeln'];
+const K=32,START=1000,STREAK=3,HOT=5,MAXFIRE=10,GIANT=.3,DUO_MIN=3,VIEWS=['tabelle','eintragen','spiele','statistik','spieler','archiv','regeln'];
 const CLOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 8v5l3.5 2.5M9 1.5h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
 const BALL='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5l4.3 3.1-1.6 5h-5.4l-1.6-5z" fill="currentColor"/></svg>';
 const DUO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3.6" fill="currentColor"/><circle cx="16.5" cy="8" r="3.6" fill="currentColor" opacity=".6"/><path d="M1.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6z" fill="currentColor"/><path d="M10.5 20c0-3.6 2.6-6 6-6s6 2.4 6 6z" fill="currentColor" opacity=".6"/></svg>';
@@ -290,7 +301,9 @@ const MEDAL='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="rb1" d="M5
 const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 1 3.5 13.5h6.8L9 23l11.5-13.2h-7z" fill="currentColor"/></svg>';
 const fireTier=n=>n>=MAXFIRE?['t3','Unaufhaltbar']:n>=HOT?['t2','Glühend']:['','Heiß'];
 const fire=n=>n>=STREAK?`<span class="fire ${fireTier(n)[0]}" title="${n} Siege in Folge">${FLAME}${n}</span>`:'';
-const achs=p=>{const h=(p.shut?`<span class="ach ic-sh" title="Weiße Weste">${SHIELD}${p.shut>1?p.shut:''}</span>`:'')+(p.best>=HOT?`<span class="ach ic-md" title="Serientäter, längste Serie">${MEDAL}${p.best}</span>`:'')+(p.giant?`<span class="ach ic-bt" title="Riesentöter">${BOLT}${p.giant>1?p.giant:''}</span>`:'');return h?`<span class="achs">${h}</span>`:''};
+const achs=p=>{const h=(p.shut?`<span class="ac c-sh">${SHIELD}Weiße Weste${p.shut>1?' ×'+p.shut:''}</span>`:'')+(p.best>=HOT?`<span class="ac c-md">${MEDAL}Serientäter · ${p.best}</span>`:'')+(p.giant?`<span class="ac c-bt">${BOLT}Riesentöter${p.giant>1?' ×'+p.giant:''}</span>`:'');return h?`<span class="achs">${h}</span>`:''};
+const TCLS={GM:'t-gm',IM:'t-im',FM:'t-fm','★':'t-ss'};
+const titleHTML=t=>t[1]?`<span class="tl ${TCLS[t[1]]}"><b>${t[1]}</b>${t[2]}</span>`:t[2];
 const TITLES=[[1180,'GM','Großmeister'],[1130,'IM','Internationaler Meister'],[1080,'FM','Flankenmeister'],[1040,'★','Shootingstar'],[1000,'','Stammspieler'],[930,'','Hobbykicker'],[-Infinity,'','Kurbler']];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -350,7 +363,7 @@ function recompute(){
 }
 
 function rows(season,crownId,archive){const t=season.res.table,top=t.length?t[0].elo:null;return t.map(p=>{const ti=titleOf(p.elo,p.games),rk=1+t.filter(o=>o.elo>p.elo).length;
-  return `<button class="row${rk===1?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${rk}</span><span class="who"><span class="nm">${nm(p.id)}${p.id===crownId?crownTag():''}${!archive&&p.elo===top?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]} · ${p.games} Sp. · ${p.wins}–${p.games-p.wins}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
+  return `<button class="row${rk===1?' lead':''}" data-pid="${esc(p.id)}" data-season="${season.key}"><span class="rk num">${rk}</span><span class="who"><span class="nm">${nm(p.id)}${ti[1]?titleHTML(ti):''}${p.id===crownId?crownTag():''}${!archive&&p.elo===top?`<span class="tk">${CROWN}Auf Titelkurs</span>`:''}${archive?'':fire(p.cur)}</span><span class="sub">${ti[1]?'':ti[2]+' · '}${p.games} Sp. · ${p.wins}–${p.games-p.wins}</span><span class="form">${p.form.slice(-5).map(w=>`<i class="dot${w?' w':''}"></i>`).join('')}${achs(p)}</span></span><span class="elo num">${p.elo}${archive?'':`<small class="${p.last>0?'up':'dn'}">${sg(p.last)}</small>`}</span></button>`}).join('')}
 
 function matchHTML(m,d,del){const aw=m.ga>m.gb;d=d||{a:0,b:0};
   const side=(ids,won,c,v)=>`<span class="side ${c}${won?' won':''}"><span>${ids.map(nm).join(' & ')}</span><em>${v>0?'+':'−'}${Math.abs(v)} Elo${ids.length>1&&m.a.length!==m.b.length?' je':''}</em></span>`;
@@ -489,9 +502,9 @@ function renderRules(){
   const eq=(a,b)=>gain(1000,1000,mf(a,b)),w21=pts(1050,1000,2,1,true,mf(10,4)),l21=pts(1050,1000,2,1,false,mf(10,4));
   $('#ex21').textContent=`Beispiel mit drei gleich Starken und 10:4: Gewinnt das Duo, bekommt jeder im Duo ${sg(w21[0])} und der Einzelspieler ${sg(w21[1])}. Gewinnt der Einzelspieler, bekommt er ${sg(l21[1])} und jeder im Duo ${sg(l21[0])}.`;
   $('#ex').innerHTML=`<li>Gleich stark (1000 gegen 1000): knapper Sieg wie 10:8 oder 12:10 <b>+${eq(10,8)}</b>, 10:4 <b>+${eq(10,4)}</b>, 10:0 <b>+${eq(10,0)}</b>. Der Verlierer verliert jeweils genauso viel.</li><li>Favorit (1200) schlägt Außenseiter (1000) 10:5: nur <b>+${gain(1200,1000,mf(10,5))}</b></li><li>Außenseiter (1000) schlägt Favorit (1200) 10:5: <b>+${gain(1000,1200,mf(10,5))}</b></li>`;
-  $('#titles').innerHTML=TITLES.map((t,i)=>`<li><span>${t[1]?`<b class="badge">${t[1]}</b>`:''}</span><span>${t[2]}</span><span class="num">${i===TITLES.length-1?`unter ${TITLES[i-1][0]}`:`ab ${t[0]}`}</span></li>`).join('')+`<li><span>${CROWN}</span><span>Weltmeister: Sieger der Vorsaison, eine Saison lang</span><span class="num">Krone</span></li>`;
+  $('#titles').innerHTML=TITLES.map((t,i)=>`<li><span>${t[1]?`<span class="tl ${TCLS[t[1]]}"><b>${t[1]}</b></span>`:''}</span><span>${t[2]}</span><span class="num">${i===TITLES.length-1?`unter ${TITLES[i-1][0]}`:`ab ${t[0]}`}</span></li>`).join('')+`<li><span>${CROWN}</span><span>Weltmeister: Sieger der Vorsaison, eine Saison lang</span><span class="num">Krone</span></li>`;
   $('#achl').innerHTML=[[fire(STREAK),'Heiß: laufende Serie, die Zahl zeigt die Siege am Stück',`ab ${STREAK} Siegen`],[fire(HOT),'Glühend: die Flamme wird blau',`ab ${HOT} Siegen`],[fire(MAXFIRE),'Unaufhaltbar: die Flamme wird violett',`ab ${MAXFIRE} Siegen`],
-    [`<span class="ach ic-sh">${SHIELD}</span>`,'Weiße Weste: Sieg, bei dem der Gegner kein Tor geschossen hat','Zahl = wie oft'],[`<span class="ach ic-md">${MEDAL}</span>`,`Serientäter: ${HOT} Siege am Stück geschafft, bleibt die Saison über stehen`,'Zahl = längste Serie'],[`<span class="ach ic-bt">${BOLT}</span>`,`Riesentöter: Sieg mit weniger als ${GIANT*100} % Siegchance`,'Zahl = wie oft']]
+    [`<span class="ac c-sh">${SHIELD}</span>`,'Weiße Weste: Sieg, bei dem der Gegner kein Tor geschossen hat','Zahl = wie oft'],[`<span class="ac c-md">${MEDAL}</span>`,`Serientäter: ${HOT} Siege am Stück geschafft, bleibt die Saison über stehen`,'Zahl = längste Serie'],[`<span class="ac c-bt">${BOLT}</span>`,`Riesentöter: Sieg mit weniger als ${GIANT*100} % Siegchance`,'Zahl = wie oft']]
     .map(([i,t,n])=>`<li class="two"><span>${i}</span><span>${t} <small>· ${n}</small></span></li>`).join('')}
 
 function applyRO(){document.body.classList.toggle('ro',readOnly);$('#ro').hidden=!readOnly||!db;
@@ -571,7 +584,7 @@ async function rename(id){const n=clean($('#ren').value),p=players.find(x=>x.id=
   if(await write(pw=>api.renamePlayer(pw,id,n),'Name geändert')){editing=null;render()}}
 
 function openSheet(k,pid){const s=S.seasons.get(+k),p=s&&s.res.st.get(pid),ti=p&&titleOf(p.elo,p.games),crown=s&&(s.done?s.champ:S.holder)===pid;
-  let h=`<div class="sh-h"><div><span class="lbl">${s?s.label:''}</span><h3>${nm(pid)}${crown?crownTag():''}</h3><span class="sub">${ti?`${ti[1]?`<b class="badge">${ti[1]}</b>`:''}${ti[2]}`:'Neuling'}</span></div><button class="x" data-act="close" aria-label="Schließen">×</button></div>`;
+  let h=`<div class="sh-h"><div><span class="lbl">${s?s.label:''}</span><h3>${nm(pid)}${crown?crownTag():''}</h3><span class="sub">${ti?`${titleHTML(ti)}`:'Neuling'}</span></div><button class="x" data-act="close" aria-label="Schließen">×</button></div>`;
   if(!p)h+=`<p class="hint">Noch kein Spiel in dieser Saison, startet bei ${START} Elo.</p>`;
   else{const op=[...p.opp],fav=op.filter(([,r])=>r.w>r.l).sort((x,y)=>(y[1].w-y[1].l)-(x[1].w-x[1].l)||y[1].w-x[1].w)[0],nem=op.filter(([,r])=>r.l>r.w).sort((x,y)=>(y[1].l-y[1].w)-(x[1].l-x[1].w)||y[1].l-x[1].l)[0],mate=[...p.mates].sort((x,y)=>y[1].w-x[1].w||y[1].g-x[1].g)[0],hs=p.hist,mn=Math.min(...hs),mx=Math.max(...hs),rg=Math.max(mx-mn,20),y=v=>(95-(v-mn)/rg*90).toFixed(1);
     const pts=hs.map((v,i)=>`${(i/(hs.length-1)*300).toFixed(1)},${y(v)}`).join(' ');
